@@ -12,7 +12,7 @@
 
 <meta name="author" content="James Day" />
 
-<meta name="date" content="2019-11-27" />
+<meta name="date" content="2020-01-08" />
 
 <title>ELO Ratings Example</title>
 
@@ -300,7 +300,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">ELO Ratings Example</h1>
 <h4 class="author"><em>James Day</em></h4>
-<h4 class="date"><em>2019-11-27</em></h4>
+<h4 class="date"><em>2020-01-08</em></h4>
 
 
 
@@ -309,22 +309,9 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <h2>Load packages</h2>
 <p>First we need to grab a few packages. If you don’t have any of these, you’ll need to install them.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb1-3" title="3"><span class="co">#&gt; Attaching package: &#39;dplyr&#39;</span></a>
-<a class="sourceLine" id="cb1-4" title="4"><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></a>
-<a class="sourceLine" id="cb1-5" title="5"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="co">#&gt;     filter, lag</span></a>
-<a class="sourceLine" id="cb1-7" title="7"><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></a>
-<a class="sourceLine" id="cb1-8" title="8"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb1-9" title="9"><span class="co">#&gt;     intersect, setdiff, setequal, union</span></a>
-<a class="sourceLine" id="cb1-10" title="10"><span class="kw">library</span>(elo)</a>
-<a class="sourceLine" id="cb1-11" title="11"><span class="kw">library</span>(lubridate)</a>
-<a class="sourceLine" id="cb1-12" title="12"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb1-13" title="13"><span class="co">#&gt; Attaching package: &#39;lubridate&#39;</span></a>
-<a class="sourceLine" id="cb1-14" title="14"><span class="co">#&gt; The following object is masked from &#39;package:base&#39;:</span></a>
-<a class="sourceLine" id="cb1-15" title="15"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb1-16" title="16"><span class="co">#&gt;     date</span></a>
-<a class="sourceLine" id="cb1-17" title="17"><span class="kw">library</span>(fitzRoy)</a></code></pre></div>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(elo)</a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="kw">library</span>(lubridate)</a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="kw">library</span>(fitzRoy)</a></code></pre></div>
 </div>
 <div id="get-data" class="section level2">
 <h2>Get data</h2>
@@ -334,28 +321,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb2-3" title="3">fixture &lt;-<span class="st"> </span>fitzRoy<span class="op">::</span><span class="kw">get_fixture</span>(<span class="dv">2019</span>)</a>
 <a class="sourceLine" id="cb2-4" title="4"></a>
 <a class="sourceLine" id="cb2-5" title="5"><span class="kw">head</span>(results)</a>
-<a class="sourceLine" id="cb2-6" title="6"><span class="co">#&gt; # A tibble: 6 x 16</span></a>
-<a class="sourceLine" id="cb2-7" title="7"><span class="co">#&gt;    Game Date       Round Home.Team Home.Goals Home.Behinds Home.Points</span></a>
-<a class="sourceLine" id="cb2-8" title="8"><span class="co">#&gt;   &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt; &lt;chr&gt;          &lt;int&gt;        &lt;int&gt;       &lt;int&gt;</span></a>
-<a class="sourceLine" id="cb2-9" title="9"><span class="co">#&gt; 1     1 1897-05-08 R1    Fitzroy            6           13          49</span></a>
-<a class="sourceLine" id="cb2-10" title="10"><span class="co">#&gt; 2     2 1897-05-08 R1    Collingw…          5           11          41</span></a>
-<a class="sourceLine" id="cb2-11" title="11"><span class="co">#&gt; 3     3 1897-05-08 R1    Geelong            3            6          24</span></a>
-<a class="sourceLine" id="cb2-12" title="12"><span class="co">#&gt; 4     4 1897-05-08 R1    Sydney             3            9          27</span></a>
-<a class="sourceLine" id="cb2-13" title="13"><span class="co">#&gt; 5     5 1897-05-15 R2    Sydney             6            4          40</span></a>
-<a class="sourceLine" id="cb2-14" title="14"><span class="co">#&gt; 6     6 1897-05-15 R2    Essendon           4            6          30</span></a>
-<a class="sourceLine" id="cb2-15" title="15"><span class="co">#&gt; # … with 9 more variables: Away.Team &lt;chr&gt;, Away.Goals &lt;int&gt;,</span></a>
-<a class="sourceLine" id="cb2-16" title="16"><span class="co">#&gt; #   Away.Behinds &lt;int&gt;, Away.Points &lt;int&gt;, Venue &lt;chr&gt;, Margin &lt;int&gt;,</span></a>
-<a class="sourceLine" id="cb2-17" title="17"><span class="co">#&gt; #   Season &lt;dbl&gt;, Round.Type &lt;chr&gt;, Round.Number &lt;int&gt;</span></a>
-<a class="sourceLine" id="cb2-18" title="18"><span class="kw">head</span>(fixture)</a>
-<a class="sourceLine" id="cb2-19" title="19"><span class="co">#&gt; # A tibble: 6 x 7</span></a>
-<a class="sourceLine" id="cb2-20" title="20"><span class="co">#&gt;   Date                Season Season.Game Round Home.Team  Away.Team  Venue </span></a>
-<a class="sourceLine" id="cb2-21" title="21"><span class="co">#&gt;   &lt;dttm&gt;               &lt;int&gt;       &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt; </span></a>
-<a class="sourceLine" id="cb2-22" title="22"><span class="co">#&gt; 1 2019-03-21 19:25:00   2019           1     1 Carlton    Richmond   MCG   </span></a>
-<a class="sourceLine" id="cb2-23" title="23"><span class="co">#&gt; 2 2019-03-22 19:50:00   2019           1     1 Collingwo… Geelong    MCG   </span></a>
-<a class="sourceLine" id="cb2-24" title="24"><span class="co">#&gt; 3 2019-03-23 13:45:00   2019           1     1 Melbourne  Port Adel… MCG   </span></a>
-<a class="sourceLine" id="cb2-25" title="25"><span class="co">#&gt; 4 2019-03-23 16:05:00   2019           1     1 Adelaide   Hawthorn   Adela…</span></a>
-<a class="sourceLine" id="cb2-26" title="26"><span class="co">#&gt; 5 2019-03-23 19:20:00   2019           1     1 Brisbane … West Coast Gabba </span></a>
-<a class="sourceLine" id="cb2-27" title="27"><span class="co">#&gt; 6 2019-03-23 19:25:00   2019           1     1 Footscray  Sydney     Marve…</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-6" title="6"><span class="kw">head</span>(fixture)</a></code></pre></div>
 </div>
 <div id="prepare-data" class="section level2">
 <h2>Prepare data</h2>
@@ -364,20 +330,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb3-2" title="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">seas_rnd =</span> <span class="kw">paste0</span>(Season, <span class="st">&quot;.&quot;</span>, Round.Number),</a>
 <a class="sourceLine" id="cb3-3" title="3">         <span class="dt">First.Game =</span> <span class="kw">ifelse</span>(Round.Number <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="ot">TRUE</span>, <span class="ot">FALSE</span>))</a>
 <a class="sourceLine" id="cb3-4" title="4"></a>
-<a class="sourceLine" id="cb3-5" title="5"><span class="kw">head</span>(results)</a>
-<a class="sourceLine" id="cb3-6" title="6"><span class="co">#&gt; # A tibble: 6 x 18</span></a>
-<a class="sourceLine" id="cb3-7" title="7"><span class="co">#&gt;    Game Date       Round Home.Team Home.Goals Home.Behinds Home.Points</span></a>
-<a class="sourceLine" id="cb3-8" title="8"><span class="co">#&gt;   &lt;dbl&gt; &lt;date&gt;     &lt;chr&gt; &lt;chr&gt;          &lt;int&gt;        &lt;int&gt;       &lt;int&gt;</span></a>
-<a class="sourceLine" id="cb3-9" title="9"><span class="co">#&gt; 1     1 1897-05-08 R1    Fitzroy            6           13          49</span></a>
-<a class="sourceLine" id="cb3-10" title="10"><span class="co">#&gt; 2     2 1897-05-08 R1    Collingw…          5           11          41</span></a>
-<a class="sourceLine" id="cb3-11" title="11"><span class="co">#&gt; 3     3 1897-05-08 R1    Geelong            3            6          24</span></a>
-<a class="sourceLine" id="cb3-12" title="12"><span class="co">#&gt; 4     4 1897-05-08 R1    Sydney             3            9          27</span></a>
-<a class="sourceLine" id="cb3-13" title="13"><span class="co">#&gt; 5     5 1897-05-15 R2    Sydney             6            4          40</span></a>
-<a class="sourceLine" id="cb3-14" title="14"><span class="co">#&gt; 6     6 1897-05-15 R2    Essendon           4            6          30</span></a>
-<a class="sourceLine" id="cb3-15" title="15"><span class="co">#&gt; # … with 11 more variables: Away.Team &lt;chr&gt;, Away.Goals &lt;int&gt;,</span></a>
-<a class="sourceLine" id="cb3-16" title="16"><span class="co">#&gt; #   Away.Behinds &lt;int&gt;, Away.Points &lt;int&gt;, Venue &lt;chr&gt;, Margin &lt;int&gt;,</span></a>
-<a class="sourceLine" id="cb3-17" title="17"><span class="co">#&gt; #   Season &lt;dbl&gt;, Round.Type &lt;chr&gt;, Round.Number &lt;int&gt;, seas_rnd &lt;chr&gt;,</span></a>
-<a class="sourceLine" id="cb3-18" title="18"><span class="co">#&gt; #   First.Game &lt;lgl&gt;</span></a></code></pre></div>
+<a class="sourceLine" id="cb3-5" title="5"><span class="kw">head</span>(results)</a></code></pre></div>
 <p>For the <code>fixture</code> data, we need to ensure the dates are in the same format as <code>results</code> (note - this should probably be done internally in <code>fitzRoy</code> - see <a href="https://github.com/jimmyday12/fitzRoy/issues/58">#58</a>). For now, we can do it manually.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">fixture &lt;-<span class="st"> </span>fixture <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb4-2" title="2"><span class="st">  </span><span class="kw">filter</span>(Date <span class="op">&gt;</span><span class="st"> </span><span class="kw">max</span>(results<span class="op">$</span>Date)) <span class="op">%&gt;%</span></a>
@@ -416,63 +369,11 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <a class="sourceLine" id="cb7-10" title="10">)</a></code></pre></div>
 <p>Now that is run, we can view our results. The <code>elo</code> package provides various ways to do this.</p>
 <p>Firstly, using <code>as.data.frame</code> we can view the predicted and actual result of each game. Also in this table is the change in ELO rating for the home and away side. See below for the last few games of 2018.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">as.data.frame</span>(elo.data) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tail</span>()</a>
-<a class="sourceLine" id="cb8-2" title="2"><span class="co">#&gt;         team.A         team.B       p.A  wins.A     update    elo.A</span></a>
-<a class="sourceLine" id="cb8-3" title="3"><span class="co">#&gt; 15609 Richmond Brisbane Lions 0.5360948 0.79375  5.1531041 1527.667</span></a>
-<a class="sourceLine" id="cb8-4" title="4"><span class="co">#&gt; 15610  Geelong     West Coast 0.5656360 0.62500  1.1872801 1545.196</span></a>
-<a class="sourceLine" id="cb8-5" title="5"><span class="co">#&gt; 15611      GWS Brisbane Lions 0.5395092 0.51875 -0.4151833 1519.332</span></a>
-<a class="sourceLine" id="cb8-6" title="6"><span class="co">#&gt; 15612 Richmond        Geelong 0.5179394 0.61875  2.0162114 1529.683</span></a>
-<a class="sourceLine" id="cb8-7" title="7"><span class="co">#&gt; 15613      GWS    Collingwood 0.5326803 0.52500 -0.1536069 1519.178</span></a>
-<a class="sourceLine" id="cb8-8" title="8"><span class="co">#&gt; 15614 Richmond            GWS 0.5580287 1.00000  8.8394252 1538.523</span></a>
-<a class="sourceLine" id="cb8-9" title="9"><span class="co">#&gt;          elo.B</span></a>
-<a class="sourceLine" id="cb8-10" title="10"><span class="co">#&gt; 15609 1522.236</span></a>
-<a class="sourceLine" id="cb8-11" title="11"><span class="co">#&gt; 15610 1526.948</span></a>
-<a class="sourceLine" id="cb8-12" title="12"><span class="co">#&gt; 15611 1522.651</span></a>
-<a class="sourceLine" id="cb8-13" title="13"><span class="co">#&gt; 15612 1543.180</span></a>
-<a class="sourceLine" id="cb8-14" title="14"><span class="co">#&gt; 15613 1526.744</span></a>
-<a class="sourceLine" id="cb8-15" title="15"><span class="co">#&gt; 15614 1510.339</span></a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">as.data.frame</span>(elo.data) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tail</span>()</a></code></pre></div>
 <p>We can specifically focus on how each team’s rating changes over time using <code>as.matrix</code>. Again - viewing the end of 2018 also shows teams that didn’t make the finals have the same ELO as the rounds go on since they aren’t playing finals.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">as.matrix</span>(elo.data) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tail</span>()</a>
-<a class="sourceLine" id="cb9-2" title="2"><span class="co">#&gt;         Adelaide Brisbane Lions  Carlton Collingwood Essendon Fitzroy</span></a>
-<a class="sourceLine" id="cb9-3" title="3"><span class="co">#&gt; [2803,] 1502.335       1530.203 1481.946    1525.998 1495.482    1500</span></a>
-<a class="sourceLine" id="cb9-4" title="4"><span class="co">#&gt; [2804,] 1499.259       1527.389 1475.897    1525.649 1495.832    1500</span></a>
-<a class="sourceLine" id="cb9-5" title="5"><span class="co">#&gt; [2805,] 1499.259       1522.236 1475.897    1526.591 1490.584    1500</span></a>
-<a class="sourceLine" id="cb9-6" title="6"><span class="co">#&gt; [2806,] 1499.259       1522.651 1475.897    1526.591 1490.584    1500</span></a>
-<a class="sourceLine" id="cb9-7" title="7"><span class="co">#&gt; [2807,] 1499.259       1522.651 1475.897    1526.744 1490.584    1500</span></a>
-<a class="sourceLine" id="cb9-8" title="8"><span class="co">#&gt; [2808,] 1499.259       1522.651 1475.897    1526.744 1490.584    1500</span></a>
-<a class="sourceLine" id="cb9-9" title="9"><span class="co">#&gt;         Footscray Fremantle      GWS  Geelong Gold Coast Hawthorn</span></a>
-<a class="sourceLine" id="cb9-10" title="10"><span class="co">#&gt; [2803,]  1513.308  1483.509 1505.810 1538.903   1421.852 1509.981</span></a>
-<a class="sourceLine" id="cb9-11" title="11"><span class="co">#&gt; [2804,]  1516.384  1479.572 1513.269 1544.951   1414.392 1516.133</span></a>
-<a class="sourceLine" id="cb9-12" title="12"><span class="co">#&gt; [2805,]  1509.906  1479.572 1519.747 1544.009   1414.392 1516.133</span></a>
-<a class="sourceLine" id="cb9-13" title="13"><span class="co">#&gt; [2806,]  1509.906  1479.572 1519.332 1545.196   1414.392 1516.133</span></a>
-<a class="sourceLine" id="cb9-14" title="14"><span class="co">#&gt; [2807,]  1509.906  1479.572 1519.178 1543.180   1414.392 1516.133</span></a>
-<a class="sourceLine" id="cb9-15" title="15"><span class="co">#&gt; [2808,]  1509.906  1479.572 1510.339 1543.180   1414.392 1516.133</span></a>
-<a class="sourceLine" id="cb9-16" title="16"><span class="co">#&gt;         Melbourne North Melbourne Port Adelaide Richmond St Kilda   Sydney</span></a>
-<a class="sourceLine" id="cb9-17" title="17"><span class="co">#&gt; [2803,]  1462.046        1508.088      1503.824 1519.699 1471.874 1496.103</span></a>
-<a class="sourceLine" id="cb9-18" title="18"><span class="co">#&gt; [2804,]  1463.576        1506.558      1507.761 1522.514 1467.797 1500.180</span></a>
-<a class="sourceLine" id="cb9-19" title="19"><span class="co">#&gt; [2805,]  1463.576        1506.558      1507.761 1527.667 1467.797 1500.180</span></a>
-<a class="sourceLine" id="cb9-20" title="20"><span class="co">#&gt; [2806,]  1463.576        1506.558      1507.761 1527.667 1467.797 1500.180</span></a>
-<a class="sourceLine" id="cb9-21" title="21"><span class="co">#&gt; [2807,]  1463.576        1506.558      1507.761 1529.683 1467.797 1500.180</span></a>
-<a class="sourceLine" id="cb9-22" title="22"><span class="co">#&gt; [2808,]  1463.576        1506.558      1507.761 1538.523 1467.797 1500.180</span></a>
-<a class="sourceLine" id="cb9-23" title="23"><span class="co">#&gt;         University West Coast</span></a>
-<a class="sourceLine" id="cb9-24" title="24"><span class="co">#&gt; [2803,]       1500   1529.041</span></a>
-<a class="sourceLine" id="cb9-25" title="25"><span class="co">#&gt; [2804,]       1500   1522.888</span></a>
-<a class="sourceLine" id="cb9-26" title="26"><span class="co">#&gt; [2805,]       1500   1528.135</span></a>
-<a class="sourceLine" id="cb9-27" title="27"><span class="co">#&gt; [2806,]       1500   1526.948</span></a>
-<a class="sourceLine" id="cb9-28" title="28"><span class="co">#&gt; [2807,]       1500   1526.948</span></a>
-<a class="sourceLine" id="cb9-29" title="29"><span class="co">#&gt; [2808,]       1500   1526.948</span></a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">as.matrix</span>(elo.data) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tail</span>()</a></code></pre></div>
 <p>Lastly, we can check the final ELO ratings of each team at the end of our data using <code>final.elos</code> (here - up to end of 2018).</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">final.elos</span>(elo.data)</a>
-<a class="sourceLine" id="cb10-2" title="2"><span class="co">#&gt;        Adelaide  Brisbane Lions         Carlton     Collingwood </span></a>
-<a class="sourceLine" id="cb10-3" title="3"><span class="co">#&gt;        1499.259        1522.651        1475.897        1526.744 </span></a>
-<a class="sourceLine" id="cb10-4" title="4"><span class="co">#&gt;        Essendon         Fitzroy       Footscray       Fremantle </span></a>
-<a class="sourceLine" id="cb10-5" title="5"><span class="co">#&gt;        1490.584        1380.902        1509.906        1479.572 </span></a>
-<a class="sourceLine" id="cb10-6" title="6"><span class="co">#&gt;             GWS         Geelong      Gold Coast        Hawthorn </span></a>
-<a class="sourceLine" id="cb10-7" title="7"><span class="co">#&gt;        1510.339        1543.180        1414.392        1516.133 </span></a>
-<a class="sourceLine" id="cb10-8" title="8"><span class="co">#&gt;       Melbourne North Melbourne   Port Adelaide        Richmond </span></a>
-<a class="sourceLine" id="cb10-9" title="9"><span class="co">#&gt;        1463.576        1506.558        1507.761        1538.523 </span></a>
-<a class="sourceLine" id="cb10-10" title="10"><span class="co">#&gt;        St Kilda          Sydney      University      West Coast </span></a>
-<a class="sourceLine" id="cb10-11" title="11"><span class="co">#&gt;        1467.797        1500.180        1412.936        1526.948</span></a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">final.elos</span>(elo.data)</a></code></pre></div>
 <p>We could keep tweaking our parameters until we are happy. Ideally we’d have a training and test set and be using some kind of cost function to optimise these values on like a log likelihood, mean absolute margin or something similar. I’ll leave that as beyond the scope of this vignette though and assume we are happy with these parameters.</p>
 </div>
 <div id="do-predictions" class="section level2">
@@ -481,12 +382,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">fixture &lt;-<span class="st"> </span>fixture <span class="op">%&gt;%</span></a>
 <a class="sourceLine" id="cb11-2" title="2"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Prob =</span> <span class="kw">predict</span>(elo.data, <span class="dt">newdata =</span> fixture))</a>
 <a class="sourceLine" id="cb11-3" title="3"></a>
-<a class="sourceLine" id="cb11-4" title="4"><span class="kw">head</span>(fixture)</a>
-<a class="sourceLine" id="cb11-5" title="5"><span class="co">#&gt; # A tibble: 1 x 8</span></a>
-<a class="sourceLine" id="cb11-6" title="6"><span class="co">#&gt;   Date       Season Season.Game Round.Number Home.Team Away.Team Venue</span></a>
-<a class="sourceLine" id="cb11-7" title="7"><span class="co">#&gt;   &lt;date&gt;      &lt;int&gt;       &lt;int&gt;        &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;</span></a>
-<a class="sourceLine" id="cb11-8" title="8"><span class="co">#&gt; 1 2019-09-28   2019           1           27 Richmond  GWS       MCG  </span></a>
-<a class="sourceLine" id="cb11-9" title="9"><span class="co">#&gt; # … with 1 more variable: Prob &lt;dbl&gt;</span></a></code></pre></div>
+<a class="sourceLine" id="cb11-4" title="4"><span class="kw">head</span>(fixture)</a></code></pre></div>
 <p>From here - you could turn these probabilities back into a margin through another mapping function. Again - I’ll leave that for the reader to decide.</p>
 <p>Looking forward to seeing all the new models utilising the power of fitzRoy.</p>
 </div>

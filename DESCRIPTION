@@ -1,6 +1,6 @@
 Package: fitzRoy
 Title: Easily Scrape and Process AFL Data
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     c(person(given = "James",
              family = "Day",
@@ -17,7 +17,11 @@ Authors@R:
       person(given = "Oscar",
              family = "Lane",
              role = "aut",
-             email = "lane.oscar@gmail.com"))
+             email = "lane.oscar@gmail.com"),
+      person(given = "Jason",
+             family = "Zivkovic",
+             role = "ctb",
+             email = "jaseziv83@gmail.com"))
 Description: An easy package for scraping and processing Australia Rules Football (AFL)
     data. 'fitzRoy' provides a range of functions for accessing publicly available data 
     from 'AFL Tables' <https://afltables.com>, 'Footy Wire' <https://www.footywire.com> and
@@ -36,14 +40,15 @@ VignetteBuilder: knitr
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Language: en-US
 NeedsCompilation: no
-Packaged: 2019-11-27 02:38:59 UTC; jamesday
+Packaged: 2020-01-07 22:05:12 UTC; jamesday
 Author: James Day [cre, aut],
   Robert Nguyen [aut],
   Matthew Erbs [ctb],
-  Oscar Lane [aut]
+  Oscar Lane [aut],
+  Jason Zivkovic [ctb]
 Maintainer: James Day <jamesthomasday@gmail.com>
 Repository: CRAN
-Date/Publication: 2019-11-30 11:20:02 UTC
+Date/Publication: 2020-01-08 14:50:03 UTC
