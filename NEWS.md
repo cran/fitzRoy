@@ -1,3 +1,7 @@
+# fitzRoy 0.3.1
+
+* Updating vignettes to use internal data rather than downloading from the internet
+
 # fitzRoy 0.3.0
 
 ## Breaking changes

@@ -3,10 +3,11 @@ context("test-afltables_player.R")
 if (!testthat:::on_cran()) {
 afltables_data <- get_afltables_stats(
   start_date = "1897-05-07",
-  end_date = Sys.Date())
+  end_date = "2019-01-01")
 }
 
 test_that("get_afltables_stats works", {
+  testthat::skip_if_offline()
   testthat::skip_on_cran()
 
   expect_type(afltables_data, "list")
@@ -17,6 +18,7 @@ test_that("get_afltables_stats works", {
 })
 
 test_that("get_afltables_stats reutrns the right number of rows", {
+  testthat::skip_if_offline()
   testthat::skip_on_cran()
   
   afltables_data_2018 <- afltables_data %>%
@@ -25,6 +27,7 @@ test_that("get_afltables_stats reutrns the right number of rows", {
 })
 
 test_that("get_afltables_stats returns correct values", {
+  testthat::skip_if_offline()
   testthat::skip_on_cran()
   
   afltables_summary <- afltables_data %>%
@@ -35,7 +38,7 @@ test_that("get_afltables_stats returns correct values", {
   # names are being kept distinct
   n_names <- afltables_summary %>%
     nrow()
-  expect_gte(n_names, 12676)
+  expect_gte(n_names, 12675)
 
   # no duplicate names
   n_unique <- afltables_summary %>%
@@ -68,7 +71,9 @@ test_that("replace_venues returns corrected venues", {
 })
 
 test_that("conver_results works", {
+  testthat::skip_if_offline()
   testthat::skip_on_cran()
+  
   expect_type(convert_results(get_match_results()), "list")
   expect_error(convert_results("a"))
 })

@@ -1,5 +1,7 @@
 ## ----setup, include = FALSE----------------------------------------------
-eval_param = identical(Sys.getenv("NOT_CRAN"), "true")
+not_cran = identical(Sys.getenv("NOT_CRAN"), "true")
+online <- !is.null(curl::nslookup("r-project.org", error = FALSE))
+eval_param <- not_cran & online
 
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -7,19 +9,27 @@ knitr::opts_chunk$set(
   eval = eval_param
 )
 
-## ----load_packages, eval=eval_param--------------------------------------
+results <- fitzRoy:::results
+fixture <- fitzRoy:::fixture
+
+## ----load_packages, eval=eval_param, message=FALSE, warning=FALSE--------
 #  library(dplyr)
 #  library(elo)
 #  library(lubridate)
 #  library(fitzRoy)
 #  
 
-## ----load_data, eval=eval_param------------------------------------------
+## ----load_data, eval=FALSE, include=TRUE---------------------------------
 #  # Get data
 #  results <- fitzRoy::get_match_results()
 #  fixture <- fitzRoy::get_fixture(2019)
-#  
-#  head(results)
+
+## ----load_data2, eval=eval_param-----------------------------------------
+#  results <- results %>% filter(Date < "2019-01-01")
+#  tail(results)
+
+## ----load_data3, eval=eval_param-----------------------------------------
+#  fixture <- fixture %>% filter(Date > "2019-01-01")
 #  head(fixture)
 
 ## ----clean_results, eval=eval_param--------------------------------------
@@ -27,14 +37,14 @@ knitr::opts_chunk$set(
 #    mutate(seas_rnd = paste0(Season, ".", Round.Number),
 #           First.Game = ifelse(Round.Number == 1, TRUE, FALSE))
 #  
-#  head(results)
-#  
 
 ## ----clean_fixture, eval=eval_param--------------------------------------
 #  fixture <- fixture %>%
 #    filter(Date > max(results$Date)) %>%
 #    mutate(Date = ymd(format(Date, "%Y-%m-%d"))) %>%
-#    rename(Round.Number = Round)
+#    rename(Round.Number = `Round`)
+#  
+#  head(fixture)
 
 ## ----elo_param, eval=eval_param------------------------------------------
 #  # Set parameters

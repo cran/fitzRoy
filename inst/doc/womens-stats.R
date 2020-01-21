@@ -1,5 +1,7 @@
 ## ----setup, include = FALSE----------------------------------------------
-eval_param = identical(Sys.getenv("NOT_CRAN"), "true")
+not_cran = identical(Sys.getenv("NOT_CRAN"), "true")
+online <- !is.null(curl::nslookup("r-project.org", error = FALSE))
+eval_param <- not_cran & online
 
 knitr::opts_chunk$set(
   collapse = TRUE,
