@@ -97,15 +97,20 @@ update_footywire_stats <- function(check_existing = TRUE) {
 
     # message("\nChecking Github")
     # Check fitzRoy GitHub
-    dat_url <- "https://github.com/jimmyday12/fitzroy_data/blob/master/data-raw/player_stats/player_stats.rda?raw=true" # nolint
-    # dat_url <- "https://raw.githubusercontent.com/jimmyday12/fitzroy-data/master/data-raw/player_stats/player_stats.rda" # nolint
+    #dat_url <- "https://github.com/jimmyday12/fitzroy_data/blob/master/data-raw/player_stats/player_stats.rda?raw=true" # nolint
+    dat_url2 <- "https://github.com/jimmyday12/fitzroy_data/raw/master/data-raw/player_stats/player_stats.rda" # nolint
     # dat_url <- "https://github.com/jimmyday12/fitzroy_data/blob/master/data-raw/player_stats/player_stats.rda" # nolint
     load_r_data <- function(fname) {
-      load(fname)
-      get(ls()[ls() != "fname"])
+      tmp <- tempfile(fileext = ".rda")
+      utils::download.file(fname, tmp)
+      
+      load(tmp)
+      unlink(tmp)
+      get(ls()[!ls() %in% c("tmp", "fname")])
+      
     }
 
-    dat_git <- load_r_data(url(dat_url))
+    dat_git <- load_r_data(dat_url2)
 
     # Check what's still missing
     git_ids <- fw_ids[!fw_ids %in% dat_git$Match_id]
@@ -511,13 +516,24 @@ get_footywire_betting_odds <- function(
     )
   }
 
-  valid_start_season:valid_end_season %>%
+  n_columns <- length(raw_betting_col_names)
+
+  raw_betting_values <- valid_start_season:valid_end_season %>%
     purrr::map(fetch_betting_odds_page) %>%
     purrr::map(., ~ do.call(extract_table_rows, .)) %>%
-    unlist() %>%
+    unlist()
+
+  betting_values <- if (is.null(raw_betting_values)) {
+    # Need two rows-worth of NAs to allow for Home and Away columns after pivoting
+    rep_len(NA, n_columns * 2)
+  } else {
+    raw_betting_values
+  }
+
+  betting_values %>%
     matrix(
       .,
-      ncol = length(raw_betting_col_names),
+      ncol = n_columns,
       byrow = TRUE,
       dimnames = list(NULL, raw_betting_col_names)
     ) %>%
@@ -563,5 +579,6 @@ get_footywire_betting_odds <- function(
     calculate_round(.) %>%
     dplyr::mutate_at(c("Home.Team", "Away.Team"), replace_teams) %>%
     dplyr::mutate(Venue = replace_venues(.data$Venue)) %>%
+    dplyr::filter(!is.na(.data$Date)) %>%
     dplyr::arrange(.data$Date)
 }

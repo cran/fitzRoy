@@ -1,3 +1,14 @@
+# fitzRoy 0.3.2
+
+## General changes
+* The Updated AFLW API URL has been updated to reflect changes to the afl.com.au website. This should now be working for the new season.
+
+## Bug Fixes
+* Fixed `get_footywire_betting_odds` to return an empty data frame when only future seasons are requested rather than raising an error ([#112](https://github.com/jimmyday12/fitzRoy/issues/112), [@cfranklin11](https://github.com/cfranklin11))
+* Fixed issue with afltables data that caused issues with home/away team in drawn finals matches [#116](https://github.com/jimmyday12/fitzRoy/issues/116)
+* Fixed issue with duplate rows in footywire data [#115](https://github.com/jimmyday12/fitzRoy/issues/115)
+
+
 # fitzRoy 0.3.1
 
 * Updating vignettes to use internal data rather than downloading from the internet

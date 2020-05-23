@@ -1,4 +1,4 @@
-## ----setup, include = FALSE----------------------------------------------
+## ----setup, include = FALSE---------------------------------------------------
 not_cran = identical(Sys.getenv("NOT_CRAN"), "true")
 online <- !is.null(curl::nslookup("r-project.org", error = FALSE))
 eval_param <- not_cran & online
@@ -9,33 +9,33 @@ knitr::opts_chunk$set(
   eval = eval_param
 )
 
-## ----libraries, message=FALSE, warning=FALSE, eval=eval_param------------
+## ----libraries, message=FALSE, warning=FALSE, eval=eval_param-----------------
 #  library(fitzRoy)
 #  library(dplyr)
 
-## ----cookie, message = FALSE, warning = FALSE, eval=eval_param-----------
+## ----cookie, message = FALSE, warning = FALSE, eval=eval_param----------------
 #  cookie <- get_aflw_cookie()
 #  
 #  print(cookie)
 
-## ----cookie_param, include=FALSE, eval=eval_param------------------------
+## ----cookie_param, include=FALSE, eval=eval_param-----------------------------
 #  if (is.null(cookie)) {
 #      eval_param = FALSE
 #    }
 #  
 
-## ----fetch_match_stats, message=FALSE, warning=TRUE, eval = eval_param----
+## ----fetch_match_stats, message=FALSE, warning=TRUE, eval = eval_param--------
 #  match_data <- get_aflw_match_data()
 
-## ----show_match_stats, message=FALSE, warning=FALSE, eval = eval_param----
+## ----show_match_stats, message=FALSE, warning=FALSE, eval = eval_param--------
 #  glimpse(match_data)
 
-## ----first_10, message=FALSE, warning=FALSE, eval = eval_param-----------
+## ----first_10, message=FALSE, warning=FALSE, eval = eval_param----------------
 #  first10 <- head(match_data, 10)
 #  first10_ids <- first10$Match.Id
 #  first10_ids
 
-## ---- eval = eval_param--------------------------------------------------
+## ---- eval = eval_param-------------------------------------------------------
 #  detailed <- get_aflw_detailed_data(first10_ids)
 #  glimpse(detailed)
 

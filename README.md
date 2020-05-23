@@ -5,8 +5,8 @@
 
 <!-- badges: start -->
 
-[![R build
-status](https://github.com/jimmyday12/fitzRoy/workflows/R-CMD-check/badge.svg)](https://github.com/jimmyday12/fitzRoy)
+[![Run
+R-CMD-check](https://github.com/jimmyday12/fitzRoy/workflows/Run%20R-CMD-check/badge.svg)](https://github.com/jimmyday12/fitzRoy/actions?query=workflow%3A%22Run+R-CMD-check%22)
 [![Travis build
 status](https://travis-ci.org/jimmyday12/fitzRoy.svg?branch=master)](https://travis-ci.org/jimmyday12/fitzRoy)
 [![Coverage
@@ -26,8 +26,7 @@ downloads](https://cranlogs.r-pkg.org/badges/grand-total/fitzRoy)](https://www.r
 The goal of fitzRoy is to provide a set of functions that allows for
 users to easily get access to AFL data from sources such as
 afltables.com and footywire.com. There are also tools for processing and
-cleaning that data. Future versions will include basic ELO processing
-functions.
+cleaning that data.
 
 ## Installation
 
@@ -76,6 +75,10 @@ From 2019, we are able to provide access to AFL Women’s data. Read the
 full [AFL Womens
 Vingette](https://jimmyday12.github.io/fitzRoy/articles/womens-stats.html)
 for details on how to access it.
+
+NOTE: The AFL website has taken down the Women’s stats pages during the
+2019/2020 offseason, so these functions no longer work. This is left for
+posterity and in the hope that they go back up evenually.
 
 ``` r
 aflw_match_data <- get_aflw_match_data()

@@ -45,7 +45,7 @@ get_afltables_stats <- function(start_date = "1897-01-01",
   message(paste0("Returning data from ", start_date, " to ", end_date))
 
   # nolint start
-  dat_url <- url("https://github.com/jimmyday12/fitzRoy/raw/master/data-raw/afl_tables_playerstats/afldata.rda")
+  dat_url <- url("https://github.com/jimmyday12/fitzRoy_data/raw/master/data-raw/afl_tables_playerstats/afldata.rda")
   # nolint end
 
   load_r_data <- function(fname) {
@@ -84,7 +84,7 @@ get_afltables_stats <- function(start_date = "1897-01-01",
     dplyr::mutate(Venue = stringr::str_squish(.data$Venue))
 
   # return data
-  dplyr::filter(dat, .data$Date > start_date & .data$Date < end_date) %>%
+  dat <- dplyr::filter(dat, .data$Date > start_date & .data$Date < end_date) %>%
     dplyr::ungroup()
 }
 
@@ -146,15 +146,18 @@ get_afltables_urls <- function(start_date,
   dates <- html_games %>%
     purrr::map(
       rvest::html_nodes,
-      "table+ table tr:nth-child(1) > td:nth-child(4)"
+      #"table+ table tr:nth-child(1) > td:nth-child(4)"
+      "tr:nth-child(1) > td:nth-child(4)"
     ) %>%
     purrr::map(rvest::html_text) %>%
     purrr::map(stringr::str_extract, "\\d{1,2}-[A-z]{3}-\\d{4}") %>%
     purrr::map(lubridate::dmy) %>%
+    purrr::map(~ .x[!is.na(.x)]) %>%
     purrr::map(~ .x > start_date & .x < end_date)
 
   match_ids <- html_games %>%
-    purrr::map(rvest::html_nodes, "tr+ tr b+ a") %>%
+    #purrr::map(rvest::html_nodes, "tr+ tr b+ a") %>%
+    purrr::map(rvest::html_nodes, "tr:nth-child(2) td:nth-child(4) a") %>%
     purrr::map(rvest::html_attr, "href") %>%
     purrr::map(~ stringr::str_replace(., "..", "https://afltables.com/afl"))
 

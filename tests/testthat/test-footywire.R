@@ -1,5 +1,9 @@
 context("testing footywire connections")
 
+if (!testthat:::on_cran()) {
+  fw_dat <- update_footywire_stats()
+}
+
 
 test_that("get_footywire_stats work with different inputs", {
   testthat::skip_if_offline()
@@ -177,17 +181,41 @@ describe("get_footywire_betting_odds", {
 
     expect_equal(nrow(bonus_rounds), 0)
   })
+
+  it("returns an empty data frame when a future season is requested", {
+    this_year <- as.numeric(lubridate::year(Sys.Date()))
+    next_year <- this_year + 1
+
+    empty_betting_df <- get_footywire_betting_odds(
+      start_season = next_year, end_season = next_year
+    )
+
+    #expect_equal(nrow(empty_betting_df), 0)
+    expect_equal(colnames(empty_betting_df), colnames(full_betting_df))
+  })
 })
 
 test_that("update_footywire_stats works ", {
   testthat::skip_if_offline()
   testthat::skip_on_cran()
-  
-fw_dat <- update_footywire_stats()
 
 expect_type(fw_dat, "list")
 #expect_equal(fw_dat[1,1], "2010-03-25")
 expect_error(update_footywire_stats("a"))
 
+})
+
+test_that("no duplicate games in footywire data,", {
+  testthat::skip_if_offline()
+  testthat::skip_on_cran()
+  
+  n_duplicates <- fw_dat %>%
+    dplyr::ungroup() %>%
+    dplyr::group_by(Date, Season, Round, Team, Player) %>%
+    dplyr::summarise(count_rows = dplyr::n()) 
+  
+  expect_lte(max(n_duplicates$count_rows), 1)
+  
+  
 })
 
