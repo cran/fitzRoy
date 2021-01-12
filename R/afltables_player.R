@@ -25,7 +25,7 @@
 #' @importFrom rlang .data
 get_afltables_stats <- function(start_date = "1897-01-01",
                                 end_date = Sys.Date()) {
-  start_date <- lubridate::parse_date_time(start_date, c("dmy", "ymd"))
+  start_date <- lubridate::parse_date_time(start_date, c("dmy", "ymd"), quiet = TRUE)
   if (is.na(start_date)) {
     stop(paste(
       "Date format not recognised",
@@ -33,7 +33,7 @@ get_afltables_stats <- function(start_date = "1897-01-01",
     ))
   }
 
-  end_date <- lubridate::parse_date_time(end_date, c("dmy", "ymd"))
+  end_date <- lubridate::parse_date_time(end_date, c("dmy", "ymd"), quiet = TRUE)
 
   if (is.na(end_date)) {
     stop(paste(
@@ -192,11 +192,28 @@ get_afltables_player_ids <- function(seasons) {
 
   if (max(seasons) > 2017) {
     urls <- purrr::map_chr(seasons[seasons > 2017], base_url)
+    
+    readUrl <- function(url) {
+      out <- tryCatch(readr::read_csv(url, 
+                                      col_types = readr::cols(),
+                                      guess_max = 10000),
+                      error = function(cond) {
+                        return(data.frame())})    
+      return(out)
+    }
+    
     post_2017 <- urls %>%
-      purrr::map(readr::read_csv,
-        col_types = readr::cols(),
-        guess_max = 10000
-      ) %>%
+      purrr::map(readUrl)
+    
+    post_2017_df <- post_2017 %>% 
+      purrr::flatten_dfr()
+    
+    if (nrow(post_2017_df) < 1) {
+      rlang::abort(glue::glue("Could not find any data for {min(seasons)} to {max(seasons)}"))
+      return(post_2017)
+    }
+    
+    post_2017 <- post_2017 %>%
       purrr::map(~ dplyr::mutate(., Round = as.character(Round)))
 
     post_2017 <- post_2017 %>%

@@ -600,28 +600,28 @@ body {
 
 <body>
 
-<h1 id="womens-afl-stats">Womens’ AFL Stats</h1>
-<p>Oscar Lane 2020-05-23</p>
+<h1 id="getting-started-with-afl-womens-data">Getting Started with AFL Women’s data</h1>
+<p>Oscar Lane 2021-01-12</p>
 <p>NOTE - The AFL website for Women’s data has been taken down. This page is left for posterity however these functions no longer work.</p>
 <h3 id="match-data">Match data</h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(fitzRoy)</a>
-<a class="sourceLine" id="cb1-2" title="2"><span class="kw">library</span>(dplyr)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(fitzRoy)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(dplyr)</span></code></pre></div>
 <p>A good thing to check is that the cookie is working. Often this gets changed or moved and without it, the code won’t work.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">cookie &lt;-<span class="st"> </span><span class="kw">get_aflw_cookie</span>()</a>
-<a class="sourceLine" id="cb2-2" title="2"></a>
-<a class="sourceLine" id="cb2-3" title="3"><span class="kw">print</span>(cookie)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>cookie &lt;-<span class="st"> </span><span class="kw">get_aflw_cookie</span>()</span>
+<span id="cb2-2"><a href="#cb2-2"></a></span>
+<span id="cb2-3"><a href="#cb2-3"></a><span class="kw">print</span>(cookie)</span></code></pre></div>
 <p>Note - if this is <code>NULL</code> the rest of this Vignette won’t show any outputs but the code will remain!</p>
 <p>We can use the <code>get_aflw_match_data()</code> function to retrieve match data for all matches.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1">match_data &lt;-<span class="st"> </span><span class="kw">get_aflw_match_data</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>match_data &lt;-<span class="st"> </span><span class="kw">get_aflw_match_data</span>()</span></code></pre></div>
 <p>Note that there will be warnings if a fixture is available but no match data has been added yet. If this is the case, make sure you don’t try to request detailed match stats for these match IDs.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">glimpse</span>(match_data)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">glimpse</span>(match_data)</span></code></pre></div>
 <h3 id="detailed-stats">Detailed stats</h3>
 <p>The <code>get_aflw_detailed_data()</code> can be used to return more detailed data than the match data shown above. It takes a vector of match IDs as an argument. For example, let’s say we want detailed stats for the first 10 games in <code>match_data</code> above. Then we would do:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">first10 &lt;-<span class="st"> </span><span class="kw">head</span>(match_data, <span class="dv">10</span>)</a>
-<a class="sourceLine" id="cb5-2" title="2">first10_ids &lt;-<span class="st"> </span>first10<span class="op">$</span>Match.Id</a>
-<a class="sourceLine" id="cb5-3" title="3">first10_ids</a></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">detailed &lt;-<span class="st"> </span><span class="kw">get_aflw_detailed_data</span>(first10_ids)</a>
-<a class="sourceLine" id="cb6-2" title="2"><span class="kw">glimpse</span>(detailed)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>first10 &lt;-<span class="st"> </span><span class="kw">head</span>(match_data, <span class="dv">10</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a>first10_ids &lt;-<span class="st"> </span>first10<span class="op">$</span>Match.Id</span>
+<span id="cb5-3"><a href="#cb5-3"></a>first10_ids</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>detailed &lt;-<span class="st"> </span><span class="kw">get_aflw_detailed_data</span>(first10_ids)</span>
+<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">glimpse</span>(detailed)</span></code></pre></div>
 
 </body>
 </html>
