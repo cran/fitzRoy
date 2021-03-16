@@ -12,8 +12,8 @@
 #' }
 #' @export
 get_aflw_cookie <- function() {
-  response <- httr::POST("https://api.afl.com.au/cfs/afl/WMCTok") # nolint
-  httr::content(response)$token
+  .Deprecated("get_afl_cookie")
+  get_afl_cookie()
 }
 
 #' Get rounds (internal function)
@@ -90,6 +90,7 @@ get_aflw_round_data <- function(roundid, cookie) {
     "http://api.afl.com.au/cfs/afl/matchItems/round/",
     roundid
   )
+
   # Extract round data JSON and flatten into data frame
   round_data <- httr::GET(
     url_head,
@@ -98,7 +99,13 @@ get_aflw_round_data <- function(roundid, cookie) {
     httr::content(as = "text", encoding = "UTF-8") %>%
     jsonlite::fromJSON(flatten = TRUE) %>%
     .$items %>% # Select data from flattened JSON file
-    dplyr::as_tibble() %>%
+    dplyr::as_tibble()
+
+  if (nrow(round_data) == 0) {
+    return(round_data)
+  }
+
+  round_data <- round_data %>%
     dplyr::mutate(
       match.venueLocalStartTime =
         readr::parse_datetime(.data$match.venueLocalStartTime)
@@ -190,11 +197,14 @@ get_aflw_round_data <- function(roundid, cookie) {
 #' get_aflw_match_data(start_year = 2018)
 #' }
 get_aflw_match_data <- function(start_year = 2017) {
-  cookie <- get_aflw_cookie()
-  available_matches <- get_aflw_rounds(cookie) %>%
-    dplyr::mutate(year = as.integer(.data$year)) %>%
-    dplyr::filter(.data$year >= start_year)
-  purrr::map_dfr(available_matches$roundId, ~ get_aflw_round_data(., cookie))
+  
+  .Deprecated("fetch_results_afl")
+  end_year <- Sys.Date() %>% format("%Y") %>% as.numeric()
+  seasons <- start_year:end_year
+  
+  seasons %>%
+    purrr::map_dfr(fetch_results_afl, NULL, "AFLW")
+  
 }
 
 

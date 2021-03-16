@@ -4,25 +4,26 @@ online <- !is.null(curl::nslookup("r-project.org", error = FALSE))
 eval_param <- not_cran & online
 
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = eval_param
+	eval = eval_param,
+	message = FALSE,
+	warning = FALSE,
+	collapse = TRUE,
+	comment = "#>"
 )
 
-results <- fitzRoy:::results
-fixture <- fitzRoy:::fixture
+results <- fitzRoy:::results_afltables_all
+fixture <- fitzRoy:::fixture_footywire_2019
 
 ## ----load_packages, eval=eval_param, message=FALSE, warning=FALSE-------------
+#  library(fitzRoy)
 #  library(dplyr)
 #  library(elo)
 #  library(lubridate)
-#  library(fitzRoy)
-#  
 
 ## ----load_data, eval=FALSE, include=TRUE--------------------------------------
 #  # Get data
-#  results <- fitzRoy::get_match_results()
-#  fixture <- fitzRoy::get_fixture(2019)
+#  results <- fitzRoy::fetch_results_afltables(1897:2019)
+#  fixture <- fitzRoy::fetch_fixture_footywire(2019)
 
 ## ----load_data2, eval=eval_param----------------------------------------------
 #  results <- results %>% filter(Date < "2019-01-01")

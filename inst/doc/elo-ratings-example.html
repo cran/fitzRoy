@@ -12,7 +12,7 @@
 
 <meta name="author" content="James Day" />
 
-<meta name="date" content="2021-01-12" />
+<meta name="date" content="2021-03-16" />
 
 <title>ELO Ratings Example</title>
 
@@ -32,45 +32,6 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
-<style type="text/css">
-a.anchor-section {margin-left: 10px; visibility: hidden; color: inherit;}
-a.anchor-section::before {content: '#';}
-.hasAnchor:hover a.anchor-section {visibility: visible;}
-</style>
-<script>// Anchor sections v1.0 written by Atsushi Yasumoto on Oct 3rd, 2020.
-document.addEventListener('DOMContentLoaded', function() {
-  // Do nothing if AnchorJS is used
-  if (typeof window.anchors === 'object' && anchors.hasOwnProperty('hasAnchorJSLink')) {
-    return;
-  }
-
-  const h = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-
-  // Do nothing if sections are already anchored
-  if (Array.from(h).some(x => x.classList.contains('hasAnchor'))) {
-    return null;
-  }
-
-  // Use section id when pandoc runs with --section-divs
-  const section_id = function(x) {
-    return ((x.classList.contains('section') || (x.tagName === 'SECTION'))
-            ? x.id : '');
-  };
-
-  // Add anchors
-  h.forEach(function(x) {
-    const id = x.id || section_id(x.parentElement);
-    if (id === '') {
-      return null;
-    }
-    let anchor = document.createElement('a');
-    anchor.href = '#' + id;
-    anchor.classList = ['anchor-section'];
-    x.classList.add('hasAnchor');
-    x.appendChild(anchor);
-  });
-});
-</script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -82,7 +43,14 @@ document.addEventListener('DOMContentLoaded', function() {
     </style>
 
 
-<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
 <style type="text/css" data-origin="pandoc">
 code.sourceCode > span { display: inline-block; line-height: 1.25; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -170,6 +138,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   }
 })();
 </script>
+
 
 
 
@@ -367,7 +336,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">ELO Ratings Example</h1>
 <h4 class="author">James Day</h4>
-<h4 class="date">2021-01-12</h4>
+<h4 class="date">2021-03-16</h4>
 
 
 
@@ -375,17 +344,19 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="load-packages" class="section level2">
 <h2>Load packages</h2>
 <p>First we need to grab a few packages. If you don’t have any of these, you’ll need to install them.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(dplyr)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(elo)</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(lubridate)</span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(fitzRoy)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(fitzRoy)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(dplyr)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(elo)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(lubridate)</span></code></pre></div>
 </div>
 <div id="get-data" class="section level2">
 <h2>Get data</h2>
 <p>Our first job is to now get the relevant data. For the most basic of ELO models, we need to have the results of past matches that includes the home and away team and the score of the match. To do our predictions, we also need upcoming matches. We can get both of those things using <code>fitzRoy</code>.</p>
+<p>For this example we will use <code>results</code> data from <a href="https://afltables.com/afl/afl_index.html">AFL Tables</a> and <code>fixture</code> data from <a href="https://www.footywire.com/">Footywire</a>. While this is generally fine, it can cause issues with teams, dates, venues or various other data to be inconsistent. This example will try to show some ways to take that into account.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Get data</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>results &lt;-<span class="st"> </span>fitzRoy<span class="op">::</span><span class="kw">get_match_results</span>()</span>
-<span id="cb2-3"><a href="#cb2-3"></a>fixture &lt;-<span class="st"> </span>fitzRoy<span class="op">::</span><span class="kw">get_fixture</span>(<span class="dv">2019</span>)</span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2"></a>results &lt;-<span class="st"> </span>fitzRoy<span class="op">::</span><span class="kw">fetch_results_afltables</span>(<span class="dv">1897</span><span class="op">:</span><span class="dv">2019</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a>fixture &lt;-<span class="st"> </span>fitzRoy<span class="op">::</span><span class="kw">fetch_fixture_footywire</span>(<span class="dv">2019</span>)</span></code></pre></div>
+<p>We can make sure our results are from before the fixture we are trying to predict for.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>results &lt;-<span class="st"> </span>results <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(Date <span class="op">&lt;</span><span class="st"> &quot;2019-01-01&quot;</span>)</span>
 <span id="cb3-2"><a href="#cb3-2"></a><span class="kw">tail</span>(results)</span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>fixture &lt;-<span class="st"> </span>fixture <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(Date <span class="op">&gt;</span><span class="st"> &quot;2019-01-01&quot;</span>)</span>
@@ -397,7 +368,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>results &lt;-<span class="st"> </span>results <span class="op">%&gt;%</span></span>
 <span id="cb5-2"><a href="#cb5-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">seas_rnd =</span> <span class="kw">paste0</span>(Season, <span class="st">&quot;.&quot;</span>, Round.Number),</span>
 <span id="cb5-3"><a href="#cb5-3"></a>         <span class="dt">First.Game =</span> <span class="kw">ifelse</span>(Round.Number <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="ot">TRUE</span>, <span class="ot">FALSE</span>))</span></code></pre></div>
-<p>For the <code>fixture</code> data, we need to ensure the dates are in the same format as <code>results</code> (note - this should probably be done internally in <code>fitzRoy</code> - see <a href="https://github.com/jimmyday12/fitzRoy/issues/58">#58</a>). For now, we can do it manually.</p>
+<p>Since our <code>fixture</code> data and <code>results</code> data are coming from different sources, we need to fix a few things up. This is a good time to point out that using similar sources is great when possible!</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>fixture &lt;-<span class="st"> </span>fixture <span class="op">%&gt;%</span></span>
 <span id="cb6-2"><a href="#cb6-2"></a><span class="st">  </span><span class="kw">filter</span>(Date <span class="op">&gt;</span><span class="st"> </span><span class="kw">max</span>(results<span class="op">$</span>Date)) <span class="op">%&gt;%</span></span>
 <span id="cb6-3"><a href="#cb6-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Date =</span> <span class="kw">ymd</span>(<span class="kw">format</span>(Date, <span class="st">&quot;%Y-%m-%d&quot;</span>))) <span class="op">%&gt;%</span></span>
@@ -452,7 +423,6 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb13-3"><a href="#cb13-3"></a></span>
 <span id="cb13-4"><a href="#cb13-4"></a><span class="kw">head</span>(fixture)</span></code></pre></div>
 <p>From here - you could turn these probabilities back into a margin through another mapping function. Again - I’ll leave that for the reader to decide.</p>
-<p>Looking forward to seeing all the new models utilising the power of fitzRoy.</p>
 </div>
 
 

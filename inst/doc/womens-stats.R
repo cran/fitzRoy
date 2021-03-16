@@ -4,38 +4,109 @@ online <- !is.null(curl::nslookup("r-project.org", error = FALSE))
 eval_param <- not_cran & online
 
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  eval = eval_param
+	eval = eval_param,
+	message = FALSE,
+	warning = FALSE,
+	collapse = TRUE,
+	comment = "#>"
 )
 
-## ----libraries, message=FALSE, warning=FALSE, eval=eval_param-----------------
-#  library(fitzRoy)
-#  library(dplyr)
+library(fitzRoy)
+library(dplyr)
 
-## ----cookie, message = FALSE, warning = FALSE, eval=eval_param----------------
-#  cookie <- get_aflw_cookie()
+## ----fetch_fixture_aflw2, eval=FALSE, include=TRUE----------------------------
+#  fetch_fixture(season = 2021, comp = "AFLW") %>%
+#    select(compSeason.name, round.name,
+#           home.team.name, away.team.name,
+#           venue.name)
+
+## ----fetch_fixture_aflw2_included,  echo=FALSE, eval=eval_param---------------
+#  fitzRoy:::fixture_afl_aflw_2021 %>%
+#    select(compSeason.name, round.name,
+#           home.team.name, away.team.name,
+#           venue.name)
+
+## ----lineup, include=TRUE, eval=FALSE-----------------------------------------
+#  fetch_lineup(2021, round_number = 1, comp = "AFLW") %>%
+#    select(round.name, status, teamName,
+#           player.playerName.givenName,
+#           player.playerName.surname, teamStatus)
+
+## ----lineup_included, echo=FALSE, eval=eval_param-----------------------------
+#  fitzRoy:::lineup_aflw_2021_1 %>%
+#    select(round.name, status, teamName,
+#           player.playerName.givenName,
+#           player.playerName.surname, teamStatus)
+
+## ----fetch_results_aflw, eval=FALSE, include=TRUE-----------------------------
+#  fetch_results(2020, round_number = 1, comp = "AFLW") %>%
+#    select( match.date, match.name,
+#           homeTeamScore.matchScore.totalScore, awayTeamScore.matchScore.totalScore)
 #  
+
+## ----fetch_results_aflw_included,  echo=FALSE, eval=eval_param----------------
+#  fitzRoy:::results_afl_aflw_2020 %>%
+#    dplyr::filter(round.roundNumber == 1) %>%
+#    select(match.date, match.name,
+#           homeTeamScore.matchScore.totalScore,
+#           awayTeamScore.matchScore.totalScore)
+
+## ----fetch_ladder_aflw2, eval=FALSE, include=TRUE-----------------------------
+#  fetch_ladder(2020, round_number = 6, comp = "AFLW") %>%
+#    select(season, round_name,
+#           position, team.name, played,
+#           pointsFor, pointsAgainst)
+#  
+
+## ----fetch_ladder_aflw2_included,  echo=FALSE, eval=eval_param----------------
+#  fitzRoy:::ladder_afl_aflw_2020 %>%
+#    dplyr::filter(round_number == 7) %>%
+#    select(season, round_name,
+#           position, team.name, played,
+#           pointsFor, pointsAgainst)
+
+## ----fetch_stats, eval=FALSE, include=TRUE------------------------------------
+#  fetch_player_stats(2020, round_number = 1, comp = "AFLW") %>%
+#    select(player.player.player.givenName:clearances.totalClearances)
+#  
+
+## ----fetch_stats_included, echo=FALSE, eval=eval_param------------------------
+#  fitzRoy:::stats_afl_aflw_2020 %>%
+#    dplyr::filter(round.roundNumber == 1) %>%
+#    dplyr::select(player.player.player.givenName:clearances.totalClearances)
+
+## ----cookie, eval=FALSE, include=TRUE-----------------------------------------
+#  cookie <- get_afl_cookie()
+#  print(cookie)
+
+## ----cookie_included, echo=FALSE, eval=eval_param-----------------------------
+#  cookie <- fitzRoy:::cookie
 #  print(cookie)
 
 ## ----cookie_param, include=FALSE, eval=eval_param-----------------------------
 #  if (is.null(cookie)) {
 #      eval_param = FALSE
 #    }
-#  
 
-## ----fetch_match_stats, message=FALSE, warning=TRUE, eval = eval_param--------
-#  match_data <- get_aflw_match_data()
+## ----fetch_match_stats, eecho=FALSE, eval=eval_param--------------------------
+#  match_data <- fetch_results(2020, round_number = 1, comp = "AFLW")
 
-## ----show_match_stats, message=FALSE, warning=FALSE, eval = eval_param--------
+## ----fetch_match_stats2, include=FALSE, eval = eval_param---------------------
+#  match_data <- fitzRoy:::results_afl_aflw_2020 %>%
+#    dplyr::filter(round.roundNumber == 1)
+
+## ----show_match_stats, eval=eval_param----------------------------------------
 #  glimpse(match_data)
 
-## ----first_10, message=FALSE, warning=FALSE, eval = eval_param----------------
+## ----first_10, eval = eval_param----------------------------------------------
 #  first10 <- head(match_data, 10)
 #  first10_ids <- first10$Match.Id
 #  first10_ids
 
-## ---- eval = eval_param-------------------------------------------------------
+## ----detailed, eval=FALSE, include=TRUE---------------------------------------
 #  detailed <- get_aflw_detailed_data(first10_ids)
 #  glimpse(detailed)
+
+## ----detailed_included, echo=FALSE, eval=eval_param---------------------------
+#  fitzRoy:::detailed_stats_aflw_2020 %>% glimpse()
 
