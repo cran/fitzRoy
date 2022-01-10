@@ -12,7 +12,7 @@
 
 
 
-<title>Main Fetch functions</title>
+<title>AFLCA Coaches Votes Functions</title>
 
 <script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
 // v0.0.1
@@ -332,62 +332,58 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Main Fetch functions</h1>
+<h1 class="title toc-ignore">AFLCA Coaches Votes Functions</h1>
 
 
 
-<p>The goal of fitzRoy has been to provide a consistent and easy to use interface for accessing data from various sources. As of version 0.3.3.9000 of <code>fitzRoy</code>, the package now contains a much more consistent API to do so. This is with the introduction of the main <code>fetch_*</code> functions.</p>
-<p>Each function uses the same arguments and each argument should behave the same across all of the functions. While there may be some slight differences in behaviour between different sources of data, the goal will be to move towards a much more consistent pattern of behaviour.</p>
-<div id="main-functions" class="section level1">
-<h1>Main functions</h1>
-<p>There are a number of main functions</p>
+<p>Functions have been added to fitzRoy to scrape and analyse AFLCA coaches votes.</p>
 <ul>
-<li><code>fetch_fixture</code> - returns the fixture for a given round and season</li>
-<li><code>fetch_lineup</code> - returns the lineup any matches in a given round and season</li>
-<li><code>fetch_results</code> - returns the match results for a given round and season</li>
-<li><code>fetch_ladder</code> - returns the ladder for a given round and season</li>
-<li><code>fetch_player_stats</code> - returns the detailed player stats for a set of matches within a given round or season</li>
-<li><code>fetch_player_details</code> - returns details on players such as date of birth, height, weight and debut (depending on source)</li>
+<li><code>fetch_coaches_votes</code> - returns all AFLCA coaches votes for given season/s, round/s, and/or team’s matches.</li>
+<li><code>calculate_coaches_vote_possibilities</code> - returns all possible breakdowns of coaches votes between two coaches, given a data frame like the one returned by <code>fetch_coaches_votes</code>.</li>
 </ul>
-</div>
-<div id="arguments" class="section level1">
-<h1>Arguments</h1>
-<p>Each function generally accepts 4 arguments. These are consistent between functions and provide sane and common defaults. The common arguments are:</p>
+<div id="scraping-coaches-votes" class="section level1">
+<h1>Scraping Coaches Votes</h1>
+<p>The <code>fetch_coaches_votes</code> function accepts 4 arguments. The <code>season</code>, <code>round_number</code> and <code>comp</code> arguments are common to the core <code>fetch_*</code> functions as per the <a href="https://jimmyday12.github.io/fitzRoy/articles/main-fetch-functions.html">Main Fetch Functions Vignette</a>.</p>
 <ul>
 <li><code>season</code> - the season or seasons to return data from. If NULL (the default), will return the season that matches <code>Sys.Date()</code></li>
 <li><code>round_number</code>- the round to return data from. If NULL (the default), will return data from all rounds</li>
-<li><code>source</code> - the source with which to return data from. Must be one of “AFL” (default), “footywire”, “fryzigg”, “afltables”, “squiggle”</li>
 <li><code>comp</code> - the competition to return data from. Must be one of “AFLM” (default) or “AFLW”. Not all data sources will have AFLW data.</li>
+<li><code>team</code> - the team/s whose matches to include. If NULL (the default), will return data from all teams.</li>
 </ul>
-</div>
-<div id="examples" class="section level1">
-<h1>Examples</h1>
-<div id="basic-usage" class="section level2">
-<h2>Basic Usage</h2>
-<p>All of the functions behave the same. The following are some examples using the <code>fetch_fixture</code> function but can equally be applied to any of the family of <code>fetch_</code> functions.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">fetch_fixture</span>(<span class="dv">2021</span>)</span></code></pre></div>
-<p>This is the same as</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">fetch_fixture</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="dt">source =</span> <span class="st">&quot;AFL&quot;</span>) </span></code></pre></div>
+<div id="examples" class="section level2">
+<h2>Examples</h2>
+<p>The following are some examples of ways to scrape the AFLCA coaches votes. Firstly, coaches votes can be retrieved for a season (or an array of seasons).</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLM&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>()</span></code></pre></div>
 <p>We can return just one round instead of the whole fixture.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">fetch_fixture</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">2</span>) <span class="op">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="st">  </span><span class="kw">select</span>(compSeason.name, round.name, home.team.name, away.team.name, venue.name)</span></code></pre></div>
-<p>We could also return the AFLW fixture instead.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">fetch_fixture</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="st">  </span><span class="kw">select</span>(compSeason.name, round.name, </span>
-<span id="cb4-3"><a href="#cb4-3"></a>         home.team.name, away.team.name, </span>
-<span id="cb4-4"><a href="#cb4-4"></a>         venue.name)</span></code></pre></div>
-<p>Lastly - we can choose a different source. Note that the field names and even the names of the teams and/or venues will be different for difference sources.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">fetch_fixture</span>(<span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">1</span>, <span class="dt">source =</span> <span class="st">&quot;squiggle&quot;</span>)</span></code></pre></div>
-<p>It should also be noted that the various sources of data have their own functions that can be called directly.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># The following are the same</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">fetch_fixture</span>(<span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">5</span>, <span class="dt">source =</span> <span class="st">&quot;squiggle&quot;</span>)</span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="kw">fetch_fixture_squiggle</span>(<span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">24</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLM&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">9</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span></code></pre></div>
+<p>We could also return coaches votes for matches including a particular team.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="dt">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>, <span class="dt">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span></code></pre></div>
+<p>Combining these, we can return coaches votes for a single match.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">24</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="dt">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">9</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>, <span class="dt">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span></code></pre></div>
 </div>
-<div id="womens-data" class="section level2">
-<h2>Womens Data</h2>
-<p>With these new functions we now have access to consistent AFLW data for the first time!</p>
-<p>At a high level, any <code>fetch_</code> function will allow you to specify the that <code>comp = &quot;AFLW</code> and will return data. Please note that Womens data only exists when <code>source = &quot;AFL&quot;</code>, which is the default for all <code>fetch_</code> functions.</p>
-<p>Read the full <a href="https://jimmyday12.github.io/fitzRoy/articles/womens-stats.html">AFL Womens Vingette</a> for specific examples.</p>
+</div>
+<div id="calculating-coaches-vote-possibilities" class="section level1">
+<h1>Calculating Coaches Vote Possibilities</h1>
+<p>The <code>calculate_coaches_vote_possibilities</code> function accepts two arguments.</p>
+<ul>
+<li><code>df</code> - a data frame which requires column names <code>Player.Name</code>, <code>Coaches.Votes</code>. This can be returned from the <code>fetch_coaches_votes</code> function. The votes can only be from a single match.</li>
+<li><code>output_type</code> - the way to present the results. <code>&quot;Coach View&quot;</code> Will provide a list of data frames with possible votes by coach. <code>&quot;Player View&quot;</code> will provide a list of data frames with possible votes by player. See the examples section for how these data frames look.</li>
+</ul>
+<div id="examples-1" class="section level2">
+<h2>Examples</h2>
+<p>The following code will return the coaches votes for a particular match, then find the possible coaches vote breakdowns.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>df &lt;-<span class="st"> </span><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">24</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="dt">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">calculate_coaches_vote_possibilities</span>(df, <span class="st">&quot;Coach View&quot;</span>)</span></code></pre></div>
+<p>The following code will create a data frame manually, then find the possible coaches vote breakdowns.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
+<span id="cb10-2"><a href="#cb10-2"></a>                <span class="dt">Player.Name =</span> <span class="kw">c</span>(<span class="st">&quot;Tom Liberatore&quot;</span>,<span class="st">&quot;Jack Macrae&quot;</span>,<span class="st">&quot;Marcus Bontempelli&quot;</span>,<span class="st">&quot;Cody Weightman&quot;</span>,<span class="st">&quot;Darcy Parish&quot;</span>,<span class="st">&quot;Aaron Naughton&quot;</span>,<span class="st">&quot;Jordan Ridley&quot;</span>),</span>
+<span id="cb10-3"><a href="#cb10-3"></a>                <span class="dt">Coaches.Votes =</span> <span class="kw">c</span>(<span class="dv">7</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>)</span>
+<span id="cb10-4"><a href="#cb10-4"></a>)</span>
+<span id="cb10-5"><a href="#cb10-5"></a><span class="kw">calculate_coaches_vote_possibilities</span>(df, <span class="st">&quot;Player View&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 

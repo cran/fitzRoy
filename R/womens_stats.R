@@ -98,7 +98,8 @@ get_aflw_round_data <- function(roundid, cookie) {
   ) %>%
     httr::content(as = "text", encoding = "UTF-8") %>%
     jsonlite::fromJSON(flatten = TRUE) %>%
-    .$items %>% # Select data from flattened JSON file
+    .$items %>%
+    # Select data from flattened JSON file
     dplyr::as_tibble()
 
   if (nrow(round_data) == 0) {
@@ -177,7 +178,7 @@ get_aflw_round_data <- function(roundid, cookie) {
 #' Get AFLW match data
 #'
 #' Retrieves AFLW match data for all available matches. Sources data from
-#' \url{https://womens.afl/}
+#' \url{https://www.womens.afl/}
 #'
 #' @param start_year optional, integer for start year to return match data
 #' onwards from
@@ -197,14 +198,14 @@ get_aflw_round_data <- function(roundid, cookie) {
 #' get_aflw_match_data(start_year = 2018)
 #' }
 get_aflw_match_data <- function(start_year = 2017) {
-  
   .Deprecated("fetch_results_afl")
-  end_year <- Sys.Date() %>% format("%Y") %>% as.numeric()
+  end_year <- Sys.Date() %>%
+    format("%Y") %>%
+    as.numeric()
   seasons <- start_year:end_year
-  
+
   seasons %>%
     purrr::map_dfr(fetch_results_afl, NULL, "AFLW")
-  
 }
 
 
