@@ -12,23 +12,20 @@
 
 <meta name="author" content="James Day" />
 
-<meta name="date" content="2022-01-10" />
+<meta name="date" content="2022-09-28" />
 
 <title>ELO Ratings Example</title>
 
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
   }
 });
 </script>
@@ -43,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </style>
 
 
+
 <style type="text/css">
   code {
     white-space: pre;
@@ -52,19 +50,19 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 </style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -84,7 +82,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -336,93 +334,150 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">ELO Ratings Example</h1>
 <h4 class="author">James Day</h4>
-<h4 class="date">2022-01-10</h4>
+<h4 class="date">2022-09-28</h4>
 
 
 
-<p>A common example of how one might use <code>fitzRoy</code> is for creating a simple <a href="https://en.wikipedia.org/wiki/Elo_rating_system">ELO</a> rating system. These models are common for tippers that are part of <a href="https://squiggle.com.au/">The Squiggle</a> and also becoming common in other team sports. This vignette shows a minimum working example to get you started on creating an ELO model from scratch, using <code>fitzRoy</code> to get data and <a href="https://github.com/eheinzen/elo">the <code>elo</code> package</a> to do the modelling.</p>
+<p>A common example of how one might use <code>fitzRoy</code> is for
+creating a simple <a href="https://en.wikipedia.org/wiki/Elo_rating_system">ELO</a> rating
+system. These models are common for tippers that are part of <a href="https://squiggle.com.au/">The Squiggle</a> and also becoming
+common in other team sports. This vignette shows a minimum working
+example to get you started on creating an ELO model from scratch, using
+<code>fitzRoy</code> to get data and <a href="https://github.com/eheinzen/elo">the <code>elo</code> package</a>
+to do the modelling.</p>
 <div id="load-packages" class="section level2">
 <h2>Load packages</h2>
-<p>First we need to grab a few packages. If you don’t have any of these, you’ll need to install them.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(fitzRoy)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(dplyr)</span>
-<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(elo)</span>
-<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(lubridate)</span></code></pre></div>
+<p>First we need to grab a few packages. If you don’t have any of these,
+you’ll need to install them.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fitzRoy)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(elo)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code></pre></div>
 </div>
 <div id="get-data" class="section level2">
 <h2>Get data</h2>
-<p>Our first job is to now get the relevant data. For the most basic of ELO models, we need to have the results of past matches that includes the home and away team and the score of the match. To do our predictions, we also need upcoming matches. We can get both of those things using <code>fitzRoy</code>.</p>
-<p>For this example we will use <code>results</code> data from <a href="https://afltables.com/afl/afl_index.html">AFL Tables</a> and <code>fixture</code> data from <a href="https://www.footywire.com/">Footywire</a>. While this is generally fine, it can cause issues with teams, dates, venues or various other data to be inconsistent. This example will try to show some ways to take that into account.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># Get data</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a>results &lt;-<span class="st"> </span>fitzRoy<span class="op">::</span><span class="kw">fetch_results_afltables</span>(<span class="dv">1897</span><span class="op">:</span><span class="dv">2019</span>)</span>
-<span id="cb2-3"><a href="#cb2-3"></a>fixture &lt;-<span class="st"> </span>fitzRoy<span class="op">::</span><span class="kw">fetch_fixture_footywire</span>(<span class="dv">2019</span>)</span></code></pre></div>
-<p>We can make sure our results are from before the fixture we are trying to predict for.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>results &lt;-<span class="st"> </span>results <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(Date <span class="op">&lt;</span><span class="st"> &quot;2019-01-01&quot;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">tail</span>(results)</span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>fixture &lt;-<span class="st"> </span>fixture <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">filter</span>(Date <span class="op">&gt;</span><span class="st"> &quot;2019-01-01&quot;</span>)</span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">head</span>(fixture)</span></code></pre></div>
+<p>Our first job is to now get the relevant data. For the most basic of
+ELO models, we need to have the results of past matches that includes
+the home and away team and the score of the match. To do our
+predictions, we also need upcoming matches. We can get both of those
+things using <code>fitzRoy</code>.</p>
+<p>For this example we will use <code>results</code> data from <a href="https://afltables.com/afl/afl_index.html">AFL Tables</a> and
+<code>fixture</code> data from <a href="https://www.footywire.com/">Footywire</a>. While this is generally
+fine, it can cause issues with teams, dates, venues or various other
+data to be inconsistent. This example will try to show some ways to take
+that into account.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get data</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> fitzRoy<span class="sc">::</span><span class="fu">fetch_results_afltables</span>(<span class="dv">1897</span><span class="sc">:</span><span class="dv">2019</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> fitzRoy<span class="sc">::</span><span class="fu">fetch_fixture_footywire</span>(<span class="dv">2019</span>)</span></code></pre></div>
+<p>We can make sure our results are from before the fixture we are
+trying to predict for.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> results <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Date <span class="sc">&lt;</span> <span class="st">&quot;2019-01-01&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(results)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> fixture <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Date <span class="sc">&gt;</span> <span class="st">&quot;2019-01-01&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fixture)</span></code></pre></div>
 </div>
 <div id="prepare-data" class="section level2">
 <h2>Prepare data</h2>
-<p>Before we create our model, some data preparation. In the ELO package we are using, we need a way to identify each round as a separate match, so we’ll combine <code>season</code> and <code>Round.Number</code> into a string as a unique identifier when combined with the team name. We also need a way to tell it when a new season is starting, so we’ll create a logical field that indicates if the game is the first game for a team that season.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>results &lt;-<span class="st"> </span>results <span class="op">%&gt;%</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">seas_rnd =</span> <span class="kw">paste0</span>(Season, <span class="st">&quot;.&quot;</span>, Round.Number),</span>
-<span id="cb5-3"><a href="#cb5-3"></a>         <span class="dt">First.Game =</span> <span class="kw">ifelse</span>(Round.Number <span class="op">==</span><span class="st"> </span><span class="dv">1</span>, <span class="ot">TRUE</span>, <span class="ot">FALSE</span>))</span></code></pre></div>
-<p>Since our <code>fixture</code> data and <code>results</code> data are coming from different sources, we need to fix a few things up. This is a good time to point out that using similar sources is great when possible!</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>fixture &lt;-<span class="st"> </span>fixture <span class="op">%&gt;%</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="st">  </span><span class="kw">filter</span>(Date <span class="op">&gt;</span><span class="st"> </span><span class="kw">max</span>(results<span class="op">$</span>Date)) <span class="op">%&gt;%</span></span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Date =</span> <span class="kw">ymd</span>(<span class="kw">format</span>(Date, <span class="st">&quot;%Y-%m-%d&quot;</span>))) <span class="op">%&gt;%</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="st">  </span><span class="kw">rename</span>(<span class="dt">Round.Number =</span> <span class="st">`</span><span class="dt">Round</span><span class="st">`</span>)</span>
-<span id="cb6-5"><a href="#cb6-5"></a></span>
-<span id="cb6-6"><a href="#cb6-6"></a><span class="kw">head</span>(fixture)</span></code></pre></div>
+<p>Before we create our model, some data preparation. In the ELO package
+we are using, we need a way to identify each round as a separate match,
+so we’ll combine <code>season</code> and <code>Round.Number</code> into
+a string as a unique identifier when combined with the team name.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> results <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">seas_rnd =</span> <span class="fu">paste0</span>(Season, <span class="st">&quot;.&quot;</span>, Round.Number))</span></code></pre></div>
+<p>Since our <code>fixture</code> data and <code>results</code> data are
+coming from different sources, we need to fix a few things up. This is a
+good time to point out that using similar sources is great when
+possible!</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> fixture <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Date <span class="sc">&gt;</span> <span class="fu">max</span>(results<span class="sc">$</span>Date)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Date =</span> <span class="fu">ymd</span>(<span class="fu">format</span>(Date, <span class="st">&quot;%Y-%m-%d&quot;</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Round.Number =</span> <span class="st">`</span><span class="at">Round</span><span class="st">`</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fixture)</span></code></pre></div>
 </div>
 <div id="set-elo-parameters" class="section level2">
 <h2>Set ELO parameters</h2>
-<p>There are a range of parameters that we can tweak and include in ELO model. Here we set some basic parameters - you can read a bit more on the <a href="https://plussixoneblog.com/post/my-elo-rating-system-explained/">PlusSixOne blog</a>, which uses a similar method. For further reading, I strongly recommend checking out <a href="http://www.matterofstats.com/mafl-stats-journal/2013/10/13/building-your-own-team-rating-system.html">Matter of Stats</a> for a great explainer on the types of parameters that could be included.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="co"># Set parameters</span></span>
-<span id="cb7-2"><a href="#cb7-2"></a>HGA &lt;-<span class="st"> </span><span class="dv">30</span> <span class="co"># home ground advantage</span></span>
-<span id="cb7-3"><a href="#cb7-3"></a>carryOver &lt;-<span class="st"> </span><span class="fl">0.5</span> <span class="co"># season carry over</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a>k_val &lt;-<span class="st"> </span><span class="dv">20</span> <span class="co"># update weighting factor</span></span></code></pre></div>
+<p>There are a range of parameters that we can tweak and include in ELO
+model. Here we set some basic parameters - you can read a bit more on
+the <a href="https://plussixoneblog.com/post/my-elo-rating-system-explained/">PlusSixOne
+blog</a>, which uses a similar method. For further reading, I strongly
+recommend checking out <a href="http://www.matterofstats.com/mafl-stats-journal/2013/10/13/building-your-own-team-rating-system.html">Matter
+of Stats</a> for a great explainer on the types of parameters that could
+be included.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set parameters</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>HGA <span class="ot">&lt;-</span> <span class="dv">30</span> <span class="co"># home ground advantage</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>carryOver <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="co"># season carry over</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>k_val <span class="ot">&lt;-</span> <span class="dv">20</span> <span class="co"># update weighting factor</span></span></code></pre></div>
 </div>
 <div id="map-margin-function" class="section level2">
 <h2>Map margin function</h2>
-<p>The original ELO models in chess use values of 0 for a loss, 1 for a win and 0.5 for a draw. Since we are adapting these for AFL and we want to use the margin rather than a binary outcome, we need to map our margin to a score between 0 and 1. You can do this in many varied and complex ways, but for now, I just normalise everything based on a margin of -80 to 80. Anything outside of this goes to the margins of 0 or 1.</p>
-<p>We create that as a function and then use that function in our elo model.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>map_margin_to_outcome &lt;-<span class="st"> </span><span class="cf">function</span>(margin, <span class="dt">marg.max =</span> <span class="dv">80</span>, <span class="dt">marg.min =</span> <span class="dv">-80</span>){</span>
-<span id="cb8-2"><a href="#cb8-2"></a>  norm &lt;-<span class="st"> </span>(margin <span class="op">-</span><span class="st"> </span>marg.min)<span class="op">/</span>(marg.max <span class="op">-</span><span class="st"> </span>marg.min)</span>
-<span id="cb8-3"><a href="#cb8-3"></a>  norm <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pmin</span>(<span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pmax</span>(<span class="dv">0</span>)</span>
-<span id="cb8-4"><a href="#cb8-4"></a>}</span></code></pre></div>
+<p>The original ELO models in chess use values of 0 for a loss, 1 for a
+win and 0.5 for a draw. Since we are adapting these for AFL and we want
+to use the margin rather than a binary outcome, we need to map our
+margin to a score between 0 and 1. You can do this in many varied and
+complex ways, but for now, I just normalise everything based on a margin
+of -80 to 80. Anything outside of this goes to the margins of 0 or
+1.</p>
+<p>We create that as a function and then use that function in our elo
+model.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>map_margin_to_outcome <span class="ot">&lt;-</span> <span class="cf">function</span>(margin, <span class="at">marg.max =</span> <span class="dv">80</span>, <span class="at">marg.min =</span> <span class="sc">-</span><span class="dv">80</span>){</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  norm <span class="ot">&lt;-</span> (margin <span class="sc">-</span> marg.min)<span class="sc">/</span>(marg.max <span class="sc">-</span> marg.min)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  norm <span class="sc">%&gt;%</span> <span class="fu">pmin</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="fu">pmax</span>(<span class="dv">0</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="calculate-elo-results" class="section level2">
 <h2>Calculate ELO results</h2>
-<p>Now we are ready to create our ELO ratings! We can use the <code>elo.run</code> function from the <code>elo</code> package for this. I won’t explain everything about what is going on here - you can read all about it at the package <a href="https://CRAN.R-project.org/package=elo">vignette</a> - but in general, we provide a function that indicates what is included in our model, as well as some model parameters.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="co"># Run ELO</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a>elo.data &lt;-<span class="st"> </span><span class="kw">elo.run</span>(</span>
-<span id="cb9-3"><a href="#cb9-3"></a>  <span class="kw">map_margin_to_outcome</span>(Home.Points <span class="op">-</span><span class="st"> </span>Away.Points) <span class="op">~</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="st">  </span><span class="kw">adjust</span>(Home.Team, HGA) <span class="op">+</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="st">    </span>Away.Team <span class="op">+</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="st">    </span><span class="kw">group</span>(seas_rnd) <span class="op">+</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="st">    </span><span class="kw">regress</span>(First.Game, <span class="dv">1500</span>, carryOver),</span>
-<span id="cb9-8"><a href="#cb9-8"></a>  <span class="dt">k =</span> k_val,</span>
-<span id="cb9-9"><a href="#cb9-9"></a>  <span class="dt">data =</span> results</span>
-<span id="cb9-10"><a href="#cb9-10"></a>)</span></code></pre></div>
-<p>Now that is run, we can view our results. The <code>elo</code> package provides various ways to do this.</p>
-<p>Firstly, using <code>as.data.frame</code> we can view the predicted and actual result of each game. Also in this table is the change in ELO rating for the home and away side. See below for the last few games of 2018.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">as.data.frame</span>(elo.data) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tail</span>()</span></code></pre></div>
-<p>We can specifically focus on how each team’s rating changes over time using <code>as.matrix</code>. Again - viewing the end of 2018 also shows teams that didn’t make the finals have the same ELO as the rounds go on since they aren’t playing finals.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">as.matrix</span>(elo.data) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">tail</span>()</span></code></pre></div>
-<p>Lastly, we can check the final ELO ratings of each team at the end of our data using <code>final.elos</code> (here - up to end of 2018).</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">final.elos</span>(elo.data)</span></code></pre></div>
-<p>We could keep tweaking our parameters until we are happy. Ideally we’d have a training and test set and be using some kind of cost function to optimise these values on like a log likelihood, mean absolute margin or something similar. I’ll leave that as beyond the scope of this vignette though and assume we are happy with these parameters.</p>
+<p>Now we are ready to create our ELO ratings! We can use the
+<code>elo.run</code> function from the <code>elo</code> package for
+this. I won’t explain everything about what is going on here - you can
+read all about it at the package <a href="https://CRAN.R-project.org/package=elo">vignette</a> - but in
+general, we provide a function that indicates what is included in our
+model, as well as some model parameters.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run ELO</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>elo.data <span class="ot">&lt;-</span> <span class="fu">elo.run</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_margin_to_outcome</span>(Home.Points <span class="sc">-</span> Away.Points) <span class="sc">~</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adjust</span>(Home.Team, HGA) <span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    Away.Team <span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">regress</span>(Season, <span class="dv">1500</span>, carryOver) <span class="sc">+</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group</span>(seas_rnd),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">k =</span> k_val,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> results</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<p>Now that is run, we can view our results. The <code>elo</code>
+package provides various ways to do this.</p>
+<p>Firstly, using <code>as.data.frame</code> we can view the predicted
+and actual result of each game. Also in this table is the change in ELO
+rating for the home and away side. See below for the last few games of
+2018.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(elo.data) <span class="sc">%&gt;%</span> <span class="fu">tail</span>()</span></code></pre></div>
+<p>We can specifically focus on how each team’s rating changes over time
+using <code>as.matrix</code>. Again - viewing the end of 2018 also shows
+teams that didn’t make the finals have the same ELO as the rounds go on
+since they aren’t playing finals.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.matrix</span>(elo.data) <span class="sc">%&gt;%</span> <span class="fu">tail</span>()</span></code></pre></div>
+<p>Lastly, we can check the final ELO ratings of each team at the end of
+our data using <code>final.elos</code> (here - up to end of 2018).</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">final.elos</span>(elo.data)</span></code></pre></div>
+<p>We could keep tweaking our parameters until we are happy. Ideally
+we’d have a training and test set and be using some kind of cost
+function to optimise these values on like a log likelihood, mean
+absolute margin or something similar. I’ll leave that as beyond the
+scope of this vignette though and assume we are happy with these
+parameters.</p>
 </div>
 <div id="do-predictions" class="section level2">
 <h2>Do predictions</h2>
-<p>Now we’ve got our ELO model and are happy with our parameters, we can do some predictions! For this, we just need to use our fixture and the <code>prediction</code> function with our ELO model as an input. The <code>elo</code> package takes care of the result.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>fixture &lt;-<span class="st"> </span>fixture <span class="op">%&gt;%</span></span>
-<span id="cb13-2"><a href="#cb13-2"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">Prob =</span> <span class="kw">predict</span>(elo.data, <span class="dt">newdata =</span> fixture))</span>
-<span id="cb13-3"><a href="#cb13-3"></a></span>
-<span id="cb13-4"><a href="#cb13-4"></a><span class="kw">head</span>(fixture)</span></code></pre></div>
-<p>From here - you could turn these probabilities back into a margin through another mapping function. Again - I’ll leave that for the reader to decide.</p>
+<p>Now we’ve got our ELO model and are happy with our parameters, we can
+do some predictions! For this, we just need to use our fixture and the
+<code>prediction</code> function with our ELO model as an input. The
+<code>elo</code> package takes care of the result.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> fixture <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Prob =</span> <span class="fu">predict</span>(elo.data, <span class="at">newdata =</span> fixture))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fixture)</span></code></pre></div>
+<p>From here - you could turn these probabilities back into a margin
+through another mapping function. Again - I’ll leave that for the reader
+to decide.</p>
 </div>
 
 

@@ -1,6 +1,6 @@
 Package: fitzRoy
 Title: Easily Scrape and Process AFL Data
-Version: 1.1.0
+Version: 1.2.0
 Authors@R: 
     c(person(given = "James",
              family = "Day",
@@ -39,19 +39,19 @@ Depends: R (>= 3.5)
 Imports: dplyr, httr, jsonlite, lubridate, magrittr, purrr, readr,
         rlang (>= 0.1.2), rvest, stringr (>= 1.3.0), tidyr (>= 1.0.0),
         tidyselect, xml2, tibble, progress, glue, cli
-Suggests: covr, ggplot2, knitr, rmarkdown, testthat, roxygen2,
+Suggests: covr, elo, ggplot2, knitr, rmarkdown, testthat, roxygen2,
         spelling, curl
 VignetteBuilder: knitr
 ByteCompile: true
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Language: en-GB
 Config/testthat/edition: 3
 Config/testthat/parallel: true
 Config/testthat/start-first: fetch-player-stats,
         fetch-player-stats-legacy, fetch*
 NeedsCompilation: no
-Packaged: 2022-01-10 05:50:39 UTC; jamesday
+Packaged: 2022-09-27 23:10:34 UTC; jamesday
 Author: James Day [cre, aut],
   Robert Nguyen [aut],
   Matthew Erbs [ctb],
@@ -60,4 +60,4 @@ Author: James Day [cre, aut],
   Jacob Holden [ctb]
 Maintainer: James Day <jamesthomasday@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-01-10 07:52:48 UTC
+Date/Publication: 2022-09-29 03:00:02 UTC

@@ -12,7 +12,7 @@
 
 
 
-<title>Docker Support</title>
+<title>Fetching Player Details</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -330,44 +330,40 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Docker Support</h1>
+<h1 class="title toc-ignore">Fetching Player Details</h1>
 
 
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fitzRoy)</span></code></pre></div>
-<div id="docker-support" class="section level2">
-<h2>Docker Support</h2>
-<p>fitzRoy now provides <a href="https://www.docker.com/get-started/">Docker</a> support in the
-form of an image hosted on <a href="https://hub.docker.com/r/jimmyday12/fitzroy/">DockerHub</a>.</p>
-<div id="usage" class="section level3">
-<h3>Usage</h3>
-<p>Once you have the images,
-(e.g. <code>docker pull jimmyday12/fitzroy:latest</code>) run one of the
-following commands.</p>
-<ul>
-<li>To start <a href="https://www.rstudio.com/">RStudio</a> with Fitzroy
-ready to use:
-<ul>
-<li><code>docker run -d -p 8787:8787 --name fitzroy jimmyday12/fitzroy:latest</code>
-and open <code>http://localhost:8787</code>. *(Username:
-<code>rstudio</code>, Password: <code>rstudio</code>)</li>
-</ul></li>
-<li>To start an R terminal prompt with fitzRoy ready to use:
-<ul>
-<li><code>docker run -it jimmyday12/fitzroy:latest R</code> to start
-with an R terminal prompt.</li>
-<li>Run <code>quit()</code> to exit the container</li>
-</ul></li>
-</ul>
-</div>
-<div id="building-the-image-locally" class="section level3">
-<h3>Building the image locally</h3>
-<p>To build the Docker image run the following from the root of the
-repository.</p>
-<ul>
-<li><code>docker build -t jimmyday12/fitzroy:latest -f docker/rstudio/Dockerfile .</code></li>
-</ul>
-</div>
+<p>A special case of the <code>fetch_</code> family of functions is the
+<code>fetch_player_details_</code> set of functions. You can read the
+general explanation of how to use the main fetch functions on the <a href="https://jimmyday12.github.io/fitzRoy/articles/main-fetch-functions.html">Vignette</a>.
+The player details functions accepts slightly different arguments.</p>
+<div id="basic-usage" class="section level2">
+<h2>Basic Usage</h2>
+<p>You can use <code>fetch_player_details</code> to return a list of
+player details for a given club and source. The source will determine
+exactly what details are returned. The default is the AFL.com.au
+website.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_player_details</span>(<span class="st">&quot;Hawthorn&quot;</span>)</span></code></pre></div>
+<p>The AFL website will return AFLW or AFLM data, while other sources
+only include AFLM data.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>details_aflw <span class="ot">&lt;-</span> <span class="fu">fetch_player_details</span>(<span class="at">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>, <span class="at">current =</span> <span class="cn">TRUE</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(details_aflw)</span></code></pre></div>
+<p>The list of details returned for AFL.com.au website is below.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(details_aflw)</span></code></pre></div>
+<p>The AFLTables.com source will return all players who have played for
+the specified team over time.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_player_details</span>(<span class="st">&quot;Hawthorn&quot;</span>, <span class="at">source =</span> <span class="st">&quot;afltables&quot;</span>)</span></code></pre></div>
+<p>The Footywire.com source allows you to specify just the current list
+of players, which is fairly quick, or all players over time which can be
+a little slow.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_player_details</span>(<span class="st">&quot;Richmond&quot;</span>, <span class="at">source =</span> <span class="st">&quot;footywire&quot;</span>, <span class="at">current =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>One challenge is that each source accepts different values for the
+<code>team</code> argument. There is a helper function that will return
+an error if the wrong team is supplied and provide a list of acceptable
+values for that specific source.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_player_details</span>(<span class="st">&quot;Greater Western Sydney&quot;</span>, <span class="at">source =</span> <span class="st">&quot;afltables&quot;</span>)</span></code></pre></div>
 </div>
 
 

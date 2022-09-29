@@ -11,6 +11,7 @@ knitr::opts_chunk$set(
 	comment = "#>"
 )
 
+
 results <- fitzRoy:::results_afltables_all
 fixture <- fitzRoy:::fixture_footywire_2019
 
@@ -35,8 +36,7 @@ fixture <- fitzRoy:::fixture_footywire_2019
 
 ## ----clean_results, eval=eval_param-------------------------------------------
 #  results <- results %>%
-#    mutate(seas_rnd = paste0(Season, ".", Round.Number),
-#           First.Game = ifelse(Round.Number == 1, TRUE, FALSE))
+#    mutate(seas_rnd = paste0(Season, ".", Round.Number))
 #  
 
 ## ----clean_fixture, eval=eval_param-------------------------------------------
@@ -65,8 +65,8 @@ fixture <- fitzRoy:::fixture_footywire_2019
 #    map_margin_to_outcome(Home.Points - Away.Points) ~
 #    adjust(Home.Team, HGA) +
 #      Away.Team +
-#      group(seas_rnd) +
-#      regress(First.Game, 1500, carryOver),
+#      regress(Season, 1500, carryOver) +
+#      group(seas_rnd),
 #    k = k_val,
 #    data = results
 #  )

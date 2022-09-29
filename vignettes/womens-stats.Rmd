@@ -31,6 +31,13 @@ This vignette talks through the main data sources. To fully understand how the `
 ## Fixture
 Firstly, we can return the fixture for a season or particular round. 
 
+```{r}
+not_cran
+online
+eval_param
+
+```
+
 ```{r fetch_fixture_aflw2, eval=FALSE, include=TRUE}
 fetch_fixture(season = 2021, comp = "AFLW") %>%
   select(compSeason.name, round.name, 
@@ -108,6 +115,31 @@ fetch_player_stats(2020, round_number = 1, comp = "AFLW") %>%
 fitzRoy:::stats_afl_aflw_2020 %>%
   dplyr::filter(round.roundNumber == 1) %>%
   dplyr::select(player.player.player.givenName:clearances.totalClearances)
+```
+
+## Player Details
+We can return player details such as data of birth and listed height and weight. 
+
+```{r details_aflw, eval=FALSE, include=TRUE}
+details_aflw <- fetch_player_details(team = "Western Bulldogs", current = TRUE, comp = "AFLW", source = "AFL")
+
+head(details_aflw)
+```
+```{r details_aflw_included, echo=FALSE, eval=eval_param}
+details_aflw <- fitzRoy:::details_aflw
+head(details_aflw)
+```
+
+## Coaches Votes
+We can also return the coaches votes for a particular season, team or round. 
+
+```{r fetch_coaches_votes_aflw, eval=FALSE, include=TRUE}
+fetch_coaches_votes(season = 2021, round_number = 9, comp = "AFLW", team = "Western Bulldogs")
+```
+```{r fetch_coaches_votes_aflw_included, echo=FALSE, eval=eval_param}
+fitzRoy:::aflw_coaches_votes %>%
+  dplyr::filter(Home.Team=="Western Bulldogs" & Round == 9) %>% 
+  head()
 ```
 
 ## Legacy/Advanced Stats

@@ -32,9 +32,9 @@ fetch_results_squiggle(season = NULL, round_number = NULL)
 \item{season}{Season in YYYY format, defaults to NULL which returns the year
 corresponding the \code{Sys.Date()}}
 
-\item{round_number}{Round number, defaults to NULL which returns latest round}
+\item{round_number}{Round number, defaults to NULL which returns all rounds}
 
-\item{comp}{One of "AFLM" (default) or "AFLW"}
+\item{comp}{One of "AFLM" (default), "AFLW", "VFL", "VFLW", "WAFL", "U18B" or "U18G." Not all data sources will have non-AFL data}
 
 \item{source}{One of "AFL" (default), "footywire", "fryzigg", "afltables", "squiggle"}
 

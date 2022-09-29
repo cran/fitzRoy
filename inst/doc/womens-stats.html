@@ -14,19 +14,16 @@
 
 <title>AFL Womens Example</title>
 
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
   }
 });
 </script>
@@ -41,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </style>
 
 
+
 <style type="text/css">
   code {
     white-space: pre;
@@ -50,19 +48,19 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 </style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -82,7 +80,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -336,64 +334,104 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<p>The package provides easy access to AFLW data from the AFL.com.au website. This can be accessed via the normal <code>fetch_</code> functions in the same way you would access Men’s data.</p>
-<p>This vignette talks through the main data sources. To fully understand how the <code>fetch_</code> functions work - please read the <a href="https://jimmyday12.github.io/fitzRoy/articles/main-fetch-functions.html">Main Fetch Functions</a> vignette.</p>
+<p>The package provides easy access to AFLW data from the AFL.com.au
+website. This can be accessed via the normal <code>fetch_</code>
+functions in the same way you would access Men’s data.</p>
+<p>This vignette talks through the main data sources. To fully
+understand how the <code>fetch_</code> functions work - please read the
+<a href="https://jimmyday12.github.io/fitzRoy/articles/main-fetch-functions.html">Main
+Fetch Functions</a> vignette.</p>
 <div id="fixture" class="section level2">
 <h2>Fixture</h2>
-<p>Firstly, we can return the fixture for a season or particular round.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">fetch_fixture</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="st">  </span><span class="kw">select</span>(compSeason.name, round.name, </span>
-<span id="cb1-3"><a href="#cb1-3"></a>         home.team.name, away.team.name, </span>
-<span id="cb1-4"><a href="#cb1-4"></a>         venue.name)</span></code></pre></div>
+<p>Firstly, we can return the fixture for a season or particular
+round.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>not_cran</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>online</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>eval_param</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(compSeason.name, round.name, </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>         home.team.name, away.team.name, </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>         venue.name)</span></code></pre></div>
 </div>
 <div id="lineup" class="section level2">
 <h2>Lineup</h2>
-<p>We can get the lineup for a given set of matches in a particular round.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">fetch_lineup</span>(<span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">1</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="st">  </span><span class="kw">select</span>(round.name, status, teamName, </span>
-<span id="cb2-3"><a href="#cb2-3"></a>         player.playerName.givenName,</span>
-<span id="cb2-4"><a href="#cb2-4"></a>         player.playerName.surname, teamStatus)</span></code></pre></div>
+<p>We can get the lineup for a given set of matches in a particular
+round.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_lineup</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">1</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(round.name, status, teamName, </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>         player.playerName.givenName,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>         player.playerName.surname, teamStatus)</span></code></pre></div>
 </div>
 <div id="results" class="section level2">
 <h2>Results</h2>
-<p>The match results, including the teams playing, venue information and final scores are returned via <code>fetch_results</code>.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">fetch_results</span>(<span class="dv">2020</span>, <span class="dt">round_number =</span> <span class="dv">1</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="st">  </span><span class="kw">select</span>( match.date, match.name,</span>
-<span id="cb3-3"><a href="#cb3-3"></a>         homeTeamScore.matchScore.totalScore, awayTeamScore.matchScore.totalScore)</span></code></pre></div>
+<p>The match results, including the teams playing, venue information and
+final scores are returned via <code>fetch_results</code>.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_results</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">1</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>( match.date, match.name,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>         homeTeamScore.matchScore.totalScore, awayTeamScore.matchScore.totalScore)</span></code></pre></div>
 </div>
 <div id="ladder" class="section level2">
 <h2>Ladder</h2>
-<p>We can also get the ladder at any point with <code>fetch_ladder</code>.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">fetch_ladder</span>(<span class="dv">2020</span>, <span class="dt">round_number =</span> <span class="dv">6</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="st">  </span><span class="kw">select</span>(season, round_name, </span>
-<span id="cb4-3"><a href="#cb4-3"></a>         position, team.name, played, </span>
-<span id="cb4-4"><a href="#cb4-4"></a>         pointsFor, pointsAgainst)</span></code></pre></div>
+<p>We can also get the ladder at any point with
+<code>fetch_ladder</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_ladder</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">6</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(season, round_name, </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>         position, team.name, played, </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>         pointsFor, pointsAgainst)</span></code></pre></div>
 </div>
 <div id="stats" class="section level2">
 <h2>Stats</h2>
-<p>Lastly - we have basic player stats. This will return player level statistics such as possessions, time on ground, fantasy points and a myriad of other statistics.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">fetch_player_stats</span>(<span class="dv">2020</span>, <span class="dt">round_number =</span> <span class="dv">1</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="st">  </span><span class="kw">select</span>(player.player.player.givenName<span class="op">:</span>clearances.totalClearances)</span></code></pre></div>
+<p>Lastly - we have basic player stats. This will return player level
+statistics such as possessions, time on ground, fantasy points and a
+myriad of other statistics.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_player_stats</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">1</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(player.player.player.givenName<span class="sc">:</span>clearances.totalClearances)</span></code></pre></div>
+</div>
+<div id="player-details" class="section level2">
+<h2>Player Details</h2>
+<p>We can return player details such as data of birth and listed height
+and weight.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>details_aflw <span class="ot">&lt;-</span> <span class="fu">fetch_player_details</span>(<span class="at">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>, <span class="at">current =</span> <span class="cn">TRUE</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(details_aflw)</span></code></pre></div>
+</div>
+<div id="coaches-votes" class="section level2">
+<h2>Coaches Votes</h2>
+<p>We can also return the coaches votes for a particular season, team or
+round.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_coaches_votes</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">9</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>, <span class="at">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span></code></pre></div>
 </div>
 <div id="legacyadvanced-stats" class="section level2">
 <h2>Legacy/Advanced Stats</h2>
-<p>We have a legacy function to provide advanced AFLW stats. This is going to be deprecated in favour of a more robust solution but still works for now. The following code should show you how to use those functions. ### Match data</p>
-<p>A good thing to check is that the cookie is working. Often this gets changed or moved and without it, the code won’t work.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>cookie &lt;-<span class="st"> </span><span class="kw">get_afl_cookie</span>()</span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">print</span>(cookie)</span></code></pre></div>
-<p>Note - if this is <code>NULL</code> the rest of this Vignette won’t show any outputs but the code will remain!</p>
-<p>We can use the <code>fetch_results()</code> function to retrieve match data matches.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>match_data &lt;-<span class="st"> </span><span class="kw">fetch_results</span>(<span class="dv">2020</span>, <span class="dt">round_number =</span> <span class="dv">1</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span></code></pre></div>
-<p>Note that there will be warnings if a fixture is available but no match data has been added yet. If this is the case, make sure you don’t try to request detailed match stats for these match IDs.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">glimpse</span>(match_data)</span></code></pre></div>
+<p>We have a legacy function to provide advanced AFLW stats. This is
+going to be deprecated in favour of a more robust solution but still
+works for now. The following code should show you how to use those
+functions. ### Match data</p>
+<p>A good thing to check is that the cookie is working. Often this gets
+changed or moved and without it, the code won’t work.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>cookie <span class="ot">&lt;-</span> <span class="fu">get_afl_cookie</span>()</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cookie)</span></code></pre></div>
+<p>Note - if this is <code>NULL</code> the rest of this Vignette won’t
+show any outputs but the code will remain!</p>
+<p>We can use the <code>fetch_results()</code> function to retrieve
+match data matches.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>match_data <span class="ot">&lt;-</span> <span class="fu">fetch_results</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">1</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span></code></pre></div>
+<p>Note that there will be warnings if a fixture is available but no
+match data has been added yet. If this is the case, make sure you don’t
+try to request detailed match stats for these match IDs.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(match_data)</span></code></pre></div>
 <div id="detailed-stats" class="section level3">
 <h3>Detailed stats</h3>
-<p>The <code>get_aflw_detailed_data()</code> can be used to return more detailed data than the match data shown above. It takes a vector of match IDs as an argument. For example, let’s say we want detailed stats for the first 10 games in <code>match_data</code> above. Then we would do:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>first10 &lt;-<span class="st"> </span><span class="kw">head</span>(match_data, <span class="dv">10</span>)</span>
-<span id="cb9-2"><a href="#cb9-2"></a>first10_ids &lt;-<span class="st"> </span>first10<span class="op">$</span>Match.Id</span>
-<span id="cb9-3"><a href="#cb9-3"></a>first10_ids</span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>detailed &lt;-<span class="st"> </span><span class="kw">get_aflw_detailed_data</span>(first10_ids)</span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">glimpse</span>(detailed)</span></code></pre></div>
+<p>The <code>get_aflw_detailed_data()</code> can be used to return more
+detailed data than the match data shown above. It takes a vector of
+match IDs as an argument. For example, let’s say we want detailed stats
+for the first 10 games in <code>match_data</code> above. Then we would
+do:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>first10 <span class="ot">&lt;-</span> <span class="fu">head</span>(match_data, <span class="dv">10</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>first10_ids <span class="ot">&lt;-</span> first10<span class="sc">$</span>Match.Id</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>first10_ids</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>detailed <span class="ot">&lt;-</span> <span class="fu">get_aflw_detailed_data</span>(first10_ids)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(detailed)</span></code></pre></div>
 </div>
 </div>
 

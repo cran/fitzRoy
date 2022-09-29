@@ -6,7 +6,7 @@ test_that("fetch_player_stats_afltables works for various inputs", {
   # test normal function
   dat <- fetch_player_stats_afltables()
   expect_s3_class(dat, "tbl")
-  expect_equal(min(dat$Season), 1897)
+  expect_lte(min(dat$Season), Sys.Date() %>% format("%Y") %>% as.numeric())
   expect_gte(max(dat$Season), Sys.Date() %>% format("%Y") %>% as.numeric() - 1)
 
   # change year
@@ -18,6 +18,13 @@ test_that("fetch_player_stats_afltables works for various inputs", {
   # change round number - doesn't do anything
   dat_round2 <- fetch_player_stats_afltables(season = 2020, round_number = 2)
   expect_equal(dat_round1, dat_round2)
+  
+  # Test browlow
+  current_year <- as.numeric(format(Sys.Date(), "%Y"))
+  dat_last_year <- fetch_player_stats_afltables(current_year - 1 )
+  
+  expect_equal(sum(is.na(dat_last_year$Brownlow.Votes)), 0)
+  
 })
 
 test_that("fetch_player_stats_footywire works for various inputs", {
@@ -90,4 +97,18 @@ test_that("fetch_player_stats works", {
   expect_error(fetch_player_stats(2020, round_number = 1, source = "afltables", comp = "AFLW"))
   expect_error(fetch_player_stats(2020, round_number = 1, source = "afltables", comp = "AFLW"))
   expect_error(fetch_player_stats(2020, round_number = 1, source = "footywire", comp = "AFLW"))
+})
+
+
+test_that("fetch_player_stats works for non-AFL leagues", {
+  testthat::skip_if_offline()
+  testthat::skip_on_cran()
+  
+  # Test each source works
+  expect_s3_class(fetch_player_stats(2022, round_number = 1, source = "AFL", comp = "WAFL"), "tbl")
+  expect_s3_class(fetch_player_stats(2022, round_number = 1, source = "AFL", comp = "VFL"), "tbl")
+  expect_s3_class(fetch_player_stats(2022, round_number = 1, source = "AFL", comp = "VFLW"), "tbl")
+  expect_s3_class(fetch_player_stats(2022, round_number = 1, source = "AFL", comp = "U18B"), "tbl")
+  expect_s3_class(fetch_player_stats(2022, round_number = 1, source = "AFL", comp = "U18G"), "tbl")
+
 })

@@ -14,19 +14,16 @@
 
 <title>Main Fetch functions</title>
 
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
   }
 });
 </script>
@@ -41,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </style>
 
 
+
 <style type="text/css">
   code {
     white-space: pre;
@@ -50,19 +48,19 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 </style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -82,7 +80,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -336,58 +334,102 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<p>The goal of fitzRoy has been to provide a consistent and easy to use interface for accessing data from various sources. As of version 0.3.3.9000 of <code>fitzRoy</code>, the package now contains a much more consistent API to do so. This is with the introduction of the main <code>fetch_*</code> functions.</p>
-<p>Each function uses the same arguments and each argument should behave the same across all of the functions. While there may be some slight differences in behaviour between different sources of data, the goal will be to move towards a much more consistent pattern of behaviour.</p>
+<p>The goal of fitzRoy has been to provide a consistent and easy to use
+interface for accessing data from various sources. As of version
+0.3.3.9000 of <code>fitzRoy</code>, the package now contains a much more
+consistent API to do so. This is with the introduction of the main
+<code>fetch_*</code> functions.</p>
+<p>Each function uses the same arguments and each argument should behave
+the same across all of the functions. While there may be some slight
+differences in behaviour between different sources of data, the goal
+will be to move towards a much more consistent pattern of behaviour.</p>
 <div id="main-functions" class="section level1">
 <h1>Main functions</h1>
 <p>There are a number of main functions</p>
 <ul>
-<li><code>fetch_fixture</code> - returns the fixture for a given round and season</li>
-<li><code>fetch_lineup</code> - returns the lineup any matches in a given round and season</li>
-<li><code>fetch_results</code> - returns the match results for a given round and season</li>
-<li><code>fetch_ladder</code> - returns the ladder for a given round and season</li>
-<li><code>fetch_player_stats</code> - returns the detailed player stats for a set of matches within a given round or season</li>
-<li><code>fetch_player_details</code> - returns details on players such as date of birth, height, weight and debut (depending on source)</li>
+<li><code>fetch_fixture</code> - returns the fixture for a given round
+and season</li>
+<li><code>fetch_lineup</code> - returns the lineup any matches in a
+given round and season</li>
+<li><code>fetch_results</code> - returns the match results for a given
+round and season</li>
+<li><code>fetch_ladder</code> - returns the ladder for a given round and
+season</li>
+<li><code>fetch_player_stats</code> - returns the detailed player stats
+for a set of matches within a given round or season</li>
+<li><code>fetch_player_details</code> - returns details on players such
+as date of birth, height, weight and debut (depending on source)</li>
 </ul>
 </div>
 <div id="arguments" class="section level1">
 <h1>Arguments</h1>
-<p>Each function generally accepts 4 arguments. These are consistent between functions and provide sane and common defaults. The common arguments are:</p>
+<p>Each function generally accepts 4 arguments. These are consistent
+between functions and provide sane and common defaults. The common
+arguments are:</p>
 <ul>
-<li><code>season</code> - the season or seasons to return data from. If NULL (the default), will return the season that matches <code>Sys.Date()</code></li>
-<li><code>round_number</code>- the round to return data from. If NULL (the default), will return data from all rounds</li>
-<li><code>source</code> - the source with which to return data from. Must be one of “AFL” (default), “footywire”, “fryzigg”, “afltables”, “squiggle”</li>
-<li><code>comp</code> - the competition to return data from. Must be one of “AFLM” (default) or “AFLW”. Not all data sources will have AFLW data.</li>
+<li><code>season</code> - the season or seasons to return data from. If
+NULL (the default), will return the season that matches
+<code>Sys.Date()</code></li>
+<li><code>round_number</code>- the round to return data from. If NULL
+(the default), will return data from all rounds</li>
+<li><code>source</code> - the source with which to return data from.
+Must be one of “AFL” (default), “footywire”, “fryzigg”, “afltables”,
+“squiggle”</li>
+<li><code>comp</code> - the competition to return data from. Must be one
+of “AFLM” (default), “AFLW”, “VFL”, “VFLW”, “WAFL”, “U18B” or “U18G.”
+Not all data sources will have non-AFL data.</li>
 </ul>
 </div>
 <div id="examples" class="section level1">
 <h1>Examples</h1>
 <div id="basic-usage" class="section level2">
 <h2>Basic Usage</h2>
-<p>All of the functions behave the same. The following are some examples using the <code>fetch_fixture</code> function but can equally be applied to any of the family of <code>fetch_</code> functions.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">fetch_fixture</span>(<span class="dv">2021</span>)</span></code></pre></div>
+<p>All of the functions behave the same. The following are some examples
+using the <code>fetch_fixture</code> function but can equally be applied
+to any of the family of <code>fetch_</code> functions.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2021</span>)</span></code></pre></div>
 <p>This is the same as</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">fetch_fixture</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="dt">source =</span> <span class="st">&quot;AFL&quot;</span>) </span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>) </span></code></pre></div>
 <p>We can return just one round instead of the whole fixture.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">fetch_fixture</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">2</span>) <span class="op">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="st">  </span><span class="kw">select</span>(compSeason.name, round.name, home.team.name, away.team.name, venue.name)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(compSeason.name, round.name, home.team.name, away.team.name, venue.name)</span></code></pre></div>
 <p>We could also return the AFLW fixture instead.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">fetch_fixture</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a><span class="st">  </span><span class="kw">select</span>(compSeason.name, round.name, </span>
-<span id="cb4-3"><a href="#cb4-3"></a>         home.team.name, away.team.name, </span>
-<span id="cb4-4"><a href="#cb4-4"></a>         venue.name)</span></code></pre></div>
-<p>Lastly - we can choose a different source. Note that the field names and even the names of the teams and/or venues will be different for difference sources.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">fetch_fixture</span>(<span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">1</span>, <span class="dt">source =</span> <span class="st">&quot;squiggle&quot;</span>)</span></code></pre></div>
-<p>It should also be noted that the various sources of data have their own functions that can be called directly.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="co"># The following are the same</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">fetch_fixture</span>(<span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">5</span>, <span class="dt">source =</span> <span class="st">&quot;squiggle&quot;</span>)</span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="kw">fetch_fixture_squiggle</span>(<span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(compSeason.name, round.name, </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>         home.team.name, away.team.name, </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>         venue.name)</span></code></pre></div>
+<p>Lastly - we can choose a different source. Note that the field names
+and even the names of the teams and/or venues will be different for
+difference sources.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">1</span>, <span class="at">source =</span> <span class="st">&quot;squiggle&quot;</span>)</span></code></pre></div>
+<p>It should also be noted that the various sources of data have their
+own functions that can be called directly.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The following are the same</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">5</span>, <span class="at">source =</span> <span class="st">&quot;squiggle&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture_squiggle</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">5</span>)</span></code></pre></div>
 </div>
 <div id="womens-data" class="section level2">
 <h2>Womens Data</h2>
-<p>With these new functions we now have access to consistent AFLW data for the first time!</p>
-<p>At a high level, any <code>fetch_</code> function will allow you to specify the that <code>comp = &quot;AFLW</code> and will return data. Please note that Womens data only exists when <code>source = &quot;AFL&quot;</code>, which is the default for all <code>fetch_</code> functions.</p>
-<p>Read the full <a href="https://jimmyday12.github.io/fitzRoy/articles/womens-stats.html">AFL Womens Vingette</a> for specific examples.</p>
+<p>With these new functions we now have access to consistent AFLW data
+for the first time!</p>
+<p>At a high level, any <code>fetch_</code> function will allow you to
+specify the that <code>comp = &quot;AFLW</code> and will return data. Please
+note that Womens data only exists when <code>source = &quot;AFL&quot;</code>,
+which is the default for all <code>fetch_</code> functions.</p>
+<p>Read the full <a href="https://jimmyday12.github.io/fitzRoy/articles/womens-stats.html">AFL
+Womens Vingette</a> for specific examples.</p>
+</div>
+<div id="non-afl-data" class="section level2">
+<h2>Non-AFL data</h2>
+<p>An experimental feature as of version 1.2.0 is returning non-AFL
+related data. This only works for the source <code>AFL</code> but there
+are other comps that are available. These comps do not have as much data
+as the AFLM and AFLW comps but some functions will work.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2022</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>, <span class="at">comp =</span> <span class="st">&quot;VFL&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_player_stats</span>(<span class="dv">2022</span>, <span class="at">round =</span> <span class="dv">1</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>, <span class="at">comp =</span> <span class="st">&quot;VFLW&quot;</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2022</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>, <span class="at">comp =</span> <span class="st">&quot;WAFL&quot;</span>)</span></code></pre></div>
+<p>Available comps include * “VFL” * “VFLW” * “WAFL” * “U18B” *
+“U18G”</p>
 </div>
 </div>
 

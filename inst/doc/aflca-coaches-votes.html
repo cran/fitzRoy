@@ -14,19 +14,16 @@
 
 <title>AFLCA Coaches Votes Functions</title>
 
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
   }
 });
 </script>
@@ -41,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </style>
 
 
+
 <style type="text/css">
   code {
     white-space: pre;
@@ -50,19 +48,19 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 </style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -82,7 +80,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -336,54 +334,82 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<p>Functions have been added to fitzRoy to scrape and analyse AFLCA coaches votes.</p>
+<p>Functions have been added to fitzRoy to scrape and analyse AFLCA
+coaches votes.</p>
 <ul>
-<li><code>fetch_coaches_votes</code> - returns all AFLCA coaches votes for given season/s, round/s, and/or team’s matches.</li>
-<li><code>calculate_coaches_vote_possibilities</code> - returns all possible breakdowns of coaches votes between two coaches, given a data frame like the one returned by <code>fetch_coaches_votes</code>.</li>
+<li><code>fetch_coaches_votes</code> - returns all AFLCA coaches votes
+for given season/s, round/s, and/or team’s matches.</li>
+<li><code>calculate_coaches_vote_possibilities</code> - returns all
+possible breakdowns of coaches votes between two coaches, given a data
+frame like the one returned by <code>fetch_coaches_votes</code>.</li>
 </ul>
 <div id="scraping-coaches-votes" class="section level1">
 <h1>Scraping Coaches Votes</h1>
-<p>The <code>fetch_coaches_votes</code> function accepts 4 arguments. The <code>season</code>, <code>round_number</code> and <code>comp</code> arguments are common to the core <code>fetch_*</code> functions as per the <a href="https://jimmyday12.github.io/fitzRoy/articles/main-fetch-functions.html">Main Fetch Functions Vignette</a>.</p>
+<p>The <code>fetch_coaches_votes</code> function accepts 4 arguments.
+The <code>season</code>, <code>round_number</code> and <code>comp</code>
+arguments are common to the core <code>fetch_*</code> functions as per
+the <a href="https://jimmyday12.github.io/fitzRoy/articles/main-fetch-functions.html">Main
+Fetch Functions Vignette</a>.</p>
 <ul>
-<li><code>season</code> - the season or seasons to return data from. If NULL (the default), will return the season that matches <code>Sys.Date()</code></li>
-<li><code>round_number</code>- the round to return data from. If NULL (the default), will return data from all rounds</li>
-<li><code>comp</code> - the competition to return data from. Must be one of “AFLM” (default) or “AFLW”. Not all data sources will have AFLW data.</li>
-<li><code>team</code> - the team/s whose matches to include. If NULL (the default), will return data from all teams.</li>
+<li><code>season</code> - the season or seasons to return data from. If
+NULL (the default), will return the season that matches
+<code>Sys.Date()</code></li>
+<li><code>round_number</code>- the round to return data from. If NULL
+(the default), will return data from all rounds</li>
+<li><code>comp</code> - the competition to return data from. Must be one
+of “AFLM” (default) or “AFLW”. Not all data sources will have AFLW
+data.</li>
+<li><code>team</code> - the team/s whose matches to include. If NULL
+(the default), will return data from all teams.</li>
 </ul>
 <div id="examples" class="section level2">
 <h2>Examples</h2>
-<p>The following are some examples of ways to scrape the AFLCA coaches votes. Firstly, coaches votes can be retrieved for a season (or an array of seasons).</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLM&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>()</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">head</span>()</span></code></pre></div>
+<p>The following are some examples of ways to scrape the AFLCA coaches
+votes. Firstly, coaches votes can be retrieved for a season (or an array
+of seasons).</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_coaches_votes</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLM&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code></pre></div>
+<p>We can also return votes for AFLW.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_coaches_votes</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span> <span class="fu">head</span>()</span></code></pre></div>
 <p>We can return just one round instead of the whole fixture.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">24</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLM&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">9</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span></code></pre></div>
-<p>We could also return coaches votes for matches including a particular team.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="dt">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>, <span class="dt">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_coaches_votes</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">24</span>, <span class="at">comp =</span> <span class="st">&quot;AFLM&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_coaches_votes</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">9</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span></code></pre></div>
+<p>We could also return coaches votes for matches including a particular
+team.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_coaches_votes</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="at">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_coaches_votes</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>, <span class="at">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span></code></pre></div>
 <p>Combining these, we can return coaches votes for a single match.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">24</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="dt">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">9</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>, <span class="dt">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_coaches_votes</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">24</span>, <span class="at">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="at">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_coaches_votes</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">9</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>, <span class="at">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="calculating-coaches-vote-possibilities" class="section level1">
 <h1>Calculating Coaches Vote Possibilities</h1>
-<p>The <code>calculate_coaches_vote_possibilities</code> function accepts two arguments.</p>
+<p>The <code>calculate_coaches_vote_possibilities</code> function
+accepts two arguments.</p>
 <ul>
-<li><code>df</code> - a data frame which requires column names <code>Player.Name</code>, <code>Coaches.Votes</code>. This can be returned from the <code>fetch_coaches_votes</code> function. The votes can only be from a single match.</li>
-<li><code>output_type</code> - the way to present the results. <code>&quot;Coach View&quot;</code> Will provide a list of data frames with possible votes by coach. <code>&quot;Player View&quot;</code> will provide a list of data frames with possible votes by player. See the examples section for how these data frames look.</li>
+<li><code>df</code> - a data frame which requires column names
+<code>Player.Name</code>, <code>Coaches.Votes</code>. This can be
+returned from the <code>fetch_coaches_votes</code> function. The votes
+can only be from a single match.</li>
+<li><code>output_type</code> - the way to present the results.
+<code>&quot;Coach View&quot;</code> Will provide a list of data frames with
+possible votes by coach. <code>&quot;Player View&quot;</code> will provide a list
+of data frames with possible votes by player. See the examples section
+for how these data frames look.</li>
 </ul>
 <div id="examples-1" class="section level2">
 <h2>Examples</h2>
-<p>The following code will return the coaches votes for a particular match, then find the possible coaches vote breakdowns.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>df &lt;-<span class="st"> </span><span class="kw">fetch_coaches_votes</span>(<span class="dt">season =</span> <span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">24</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="dt">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">calculate_coaches_vote_possibilities</span>(df, <span class="st">&quot;Coach View&quot;</span>)</span></code></pre></div>
-<p>The following code will create a data frame manually, then find the possible coaches vote breakdowns.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(</span>
-<span id="cb10-2"><a href="#cb10-2"></a>                <span class="dt">Player.Name =</span> <span class="kw">c</span>(<span class="st">&quot;Tom Liberatore&quot;</span>,<span class="st">&quot;Jack Macrae&quot;</span>,<span class="st">&quot;Marcus Bontempelli&quot;</span>,<span class="st">&quot;Cody Weightman&quot;</span>,<span class="st">&quot;Darcy Parish&quot;</span>,<span class="st">&quot;Aaron Naughton&quot;</span>,<span class="st">&quot;Jordan Ridley&quot;</span>),</span>
-<span id="cb10-3"><a href="#cb10-3"></a>                <span class="dt">Coaches.Votes =</span> <span class="kw">c</span>(<span class="dv">7</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>)</span>
-<span id="cb10-4"><a href="#cb10-4"></a>)</span>
-<span id="cb10-5"><a href="#cb10-5"></a><span class="kw">calculate_coaches_vote_possibilities</span>(df, <span class="st">&quot;Player View&quot;</span>)</span></code></pre></div>
+<p>The following code will return the coaches votes for a particular
+match, then find the possible coaches vote breakdowns.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">fetch_coaches_votes</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">24</span>, <span class="at">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="at">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_coaches_vote_possibilities</span>(df, <span class="st">&quot;Coach View&quot;</span>)</span></code></pre></div>
+<p>The following code will create a data frame manually, then find the
+possible coaches vote breakdowns.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">Player.Name =</span> <span class="fu">c</span>(<span class="st">&quot;Tom Liberatore&quot;</span>,<span class="st">&quot;Jack Macrae&quot;</span>,<span class="st">&quot;Marcus Bontempelli&quot;</span>,<span class="st">&quot;Cody Weightman&quot;</span>,<span class="st">&quot;Darcy Parish&quot;</span>,<span class="st">&quot;Aaron Naughton&quot;</span>,<span class="st">&quot;Jordan Ridley&quot;</span>),</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">Coaches.Votes =</span> <span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">6</span>, <span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">4</span>, <span class="dv">2</span>, <span class="dv">1</span>)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">calculate_coaches_vote_possibilities</span>(df, <span class="st">&quot;Player View&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 

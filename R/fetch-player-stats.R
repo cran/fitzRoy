@@ -10,8 +10,7 @@
 #' Squiggle, respectively.
 #'
 #' @inheritParams fetch_ladder
-#' @return
-#' A Tibble with the player stats from the relevant `season` and `round`.
+#' @return A Tibble with the player stats from the relevant `season` and `round`.
 #' @export
 #'
 #' @examples
@@ -95,20 +94,21 @@ fetch_player_stats_afl <- function(season = NULL, round_number = NULL, comp = "A
   cli::cli_process_done(cli_id2)
 
   # add match details
+  vars <- c("providerId", "utcStartTime", "status", 
+            "compSeason.shortName", "round.name", "round.roundNumber", 
+            "venue.name", 
+            "home.team.name", "home.team.club.name", 
+            "away.team.name", "away.team.club.name")
+  
   match_details <- matches %>%
-    dplyr::select(
-      .data$providerId, .data$utcStartTime, .data$status,
-      .data$compSeason.shortName, .data$round.name,
-      .data$round.roundNumber, .data$venue.name,
-      .data$home.team.club.name, .data$away.team.club.name
-    )
+    dplyr::select(dplyr::any_of(vars))
 
   home_teams <- matches %>%
-    dplyr::select(.data$home.team.providerId, .data$home.team.name) %>%
+    dplyr::select(dplyr::any_of(c("home.team.providerId", "home.team.name"))) %>%
     dplyr::rename_with(~ gsub(x = .x, pattern = "home.team.", replacement = ""))
 
   away_teams <- matches %>%
-    dplyr::select(.data$away.team.providerId, .data$away.team.name) %>%
+    dplyr::select(dplyr::any_of(c("away.team.providerId", "away.team.name"))) %>%
     dplyr::rename_with(~ gsub(x = .x, pattern = "away.team.", replacement = ""))
 
   teams <- dplyr::bind_rows(home_teams, away_teams) %>%
@@ -124,9 +124,12 @@ fetch_player_stats_afl <- function(season = NULL, round_number = NULL, comp = "A
 }
 
 
+#' @param rescrape Logical, defaults to FALSE. Determinse if we should rescrape data for a given season. By default, we return cached data which is much faster. Rescraping is slow but sometimes needed if historical data has changed. 
+#' @param rescrape_start_season Numeric, if rescrape = TRUE, which season should we start scraping from. Defaults to minimum value of season
+#'
 #' @rdname fetch_player_stats
 #' @export
-fetch_player_stats_afltables <- function(season = NULL, round_number = NULL) {
+fetch_player_stats_afltables <- function(season = NULL, round_number = NULL, rescrape = FALSE, rescrape_start_season = NULL) {
   if (!is.null(round_number)) {
     cli::cli_alert_info("{.field round_number} is not currently used for {.code fetch_player_stats_afltables}.Returning data for all rounds in specified seasons")
   }
@@ -151,7 +154,17 @@ fetch_player_stats_afltables <- function(season = NULL, round_number = NULL) {
   dat <- load_r_data(dat_url)
   cli::cli_process_done(cli_id1)
 
-  max_date <- max(dat$Date)
+  
+  
+  if( rescrape ) {
+    if (is.null(rescrape_start_season)) rescrape_start_season <- format(start_date, "%Y")
+    max_date <- lubridate::ymd(paste0(rescrape_start_season, "01-01"))
+  } else {
+    max_date <- max(dat$Date)
+  }
+  
+  dat <- dat %>%
+    dplyr::filter(.data$Date <= max_date)
 
   if (end_date > max_date) {
     urls <- get_afltables_urls(max_date, end_date)

@@ -14,6 +14,12 @@ knitr::opts_chunk$set(
 library(fitzRoy)
 library(dplyr)
 
+## -----------------------------------------------------------------------------
+#  not_cran
+#  online
+#  eval_param
+#  
+
 ## ----fetch_fixture_aflw2, eval=FALSE, include=TRUE----------------------------
 #  fetch_fixture(season = 2021, comp = "AFLW") %>%
 #    select(compSeason.name, round.name,
@@ -74,6 +80,23 @@ library(dplyr)
 #  fitzRoy:::stats_afl_aflw_2020 %>%
 #    dplyr::filter(round.roundNumber == 1) %>%
 #    dplyr::select(player.player.player.givenName:clearances.totalClearances)
+
+## ----details_aflw, eval=FALSE, include=TRUE-----------------------------------
+#  details_aflw <- fetch_player_details(team = "Western Bulldogs", current = TRUE, comp = "AFLW", source = "AFL")
+#  
+#  head(details_aflw)
+
+## ----details_aflw_included, echo=FALSE, eval=eval_param-----------------------
+#  details_aflw <- fitzRoy:::details_aflw
+#  head(details_aflw)
+
+## ----fetch_coaches_votes_aflw, eval=FALSE, include=TRUE-----------------------
+#  fetch_coaches_votes(season = 2021, round_number = 9, comp = "AFLW", team = "Western Bulldogs")
+
+## ----fetch_coaches_votes_aflw_included, echo=FALSE, eval=eval_param-----------
+#  fitzRoy:::aflw_coaches_votes %>%
+#    dplyr::filter(Home.Team=="Western Bulldogs" & Round == 9) %>%
+#    head()
 
 ## ----cookie, eval=FALSE, include=TRUE-----------------------------------------
 #  cookie <- get_afl_cookie()

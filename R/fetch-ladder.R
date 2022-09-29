@@ -12,12 +12,11 @@
 #' @param season Season in YYYY format, defaults to NULL which returns the year
 #'  corresponding the `Sys.Date()`
 #' @param round_number Round number, defaults to NULL which returns latest round
-#' @param comp One of "AFLM" (default) or "AFLW"
+#' @param comp One of "AFLM" (default), "AFLW", "VFL", "VFLW", "WAFL", "U18B" or "U18G." Not all data sources will have non-AFL data
 #' @param source One of "AFL" (default), "footywire", "fryzigg", "afltables", "squiggle"
 #' @param ... Optional parameters passed onto various functions depending on source.
 #'
-#' @return
-#' A Tibble with the ladder from the relevant `season` and `round`.
+#' @return A Tibble with the ladder from the relevant `season` and `round`.
 #' @export
 #'
 #' @examples
@@ -127,7 +126,7 @@ fetch_ladder_afl <- function(season = NULL, round_number = NULL, comp = "AFLM") 
   }
 
   cont <- resp %>%
-    purrr::map(httr::content, as = "text") %>%
+    purrr::map(httr::content, as = "text", encoding = "UTF-8") %>%
     purrr::map(jsonlite::fromJSON, flatten = TRUE)
 
   ladder_list <- cont %>%
@@ -175,7 +174,8 @@ fetch_ladder_afl <- function(season = NULL, round_number = NULL, comp = "AFLM") 
 #' @export
 fetch_ladder_afltables <- function(season = NULL, round_number = NULL, match_results_df = NULL) {
   suppressWarnings(if (is.null(match_results_df)) {
-    match_results_df <- fetch_results_afltables(season, round_number)
+    match_results_df <- purrr::map_dfr(.x = c(1:round_number),
+                                       .f  = ~fetch_results_afltables(season, .x))
   })
 
   # first some cleaning up

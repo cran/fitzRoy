@@ -14,19 +14,16 @@
 
 <title>Introduction to fitzRoy</title>
 
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
   }
 });
 </script>
@@ -41,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     </style>
 
 
+
 <style type="text/css">
   code {
     white-space: pre;
@@ -50,19 +48,19 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 </style>
 <style type="text/css" data-origin="pandoc">
-code.sourceCode > span { display: inline-block; line-height: 1.25; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-code.sourceCode > span:empty { height: 1.2em; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
 @media screen {
 div.sourceCode { overflow: auto; }
 }
 @media print {
-code.sourceCode { white-space: pre-wrap; }
-code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -82,7 +80,7 @@ pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-le
 div.sourceCode
   {   }
 @media screen {
-code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 code span.al { color: #ff0000; font-weight: bold; } /* Alert */
 code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
@@ -336,125 +334,196 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<p>The goal of fitzRoy is to make it easy to access data from the AFLM and AFLW competitions. It provides a simple and consistent API to access data such as match results, fixtures and player statistics from multiple data sources.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(dplyr)</span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(fitzRoy)</span></code></pre></div>
+<p>The goal of fitzRoy is to make it easy to access data from the AFLM
+and AFLW competitions. It provides a simple and consistent API to access
+data such as match results, fixtures and player statistics from multiple
+data sources.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fitzRoy)</span></code></pre></div>
 <div id="fetching-data" class="section level2">
 <h2>Fetching Data</h2>
-<p>Primarily, <code>fitzRoy</code> can be used to access data from various sources using the <code>fetch_</code> functions. For a detailed view on how the API works - view the <a href="https://jimmyday12.github.io/fitzRoy/articles/main-fetch-functions.html">Main Fetch Functions</a> vignette.</p>
+<p>Primarily, <code>fitzRoy</code> can be used to access data from
+various sources using the <code>fetch_</code> functions. For a detailed
+view on how the API works - view the <a href="https://jimmyday12.github.io/fitzRoy/articles/main-fetch-functions.html">Main
+Fetch Functions</a> vignette.</p>
 </div>
 <div id="data-sources" class="section level2">
 <h2>Data Sources</h2>
-<p>There are 5 main data sources for data in fitzRoy. Where possible, we do not edit the data from how we receive it, although in some cases, we do need to aggregate and calculate certain fields based on the structure of the site.</p>
-<p>You can choose your data source as an argument to any <code>fetch_</code> function using the <code>source =</code> argument.</p>
+<p>There are 5 main data sources for data in fitzRoy. Where possible, we
+do not edit the data from how we receive it, although in some cases, we
+do need to aggregate and calculate certain fields based on the structure
+of the site.</p>
+<p>You can choose your data source as an argument to any
+<code>fetch_</code> function using the <code>source =</code>
+argument.</p>
 <div id="afl-website" class="section level3">
 <h3>AFL website</h3>
-<p>We provide data from the (AFL website)[<a href="https://www.afl.com.au/" class="uri">https://www.afl.com.au/</a>] as the default to any <code>fetch_</code> function. This data is from the official AFL data provider. With this data, we can return data for both the Mens and Womens competitions. The oldest data is from 2012. It provides access to all data types including results, fixtures, ladders, lineups and stats.</p>
+<p>We provide data from the (AFL website)[<a href="https://www.afl.com.au/" class="uri">https://www.afl.com.au/</a>]
+as the default to any <code>fetch_</code> function. This data is from
+the official AFL data provider. With this data, we can return data for
+both the Mens and Womens competitions. The oldest data is from 2012. It
+provides access to all data types including results, fixtures, ladders,
+lineups and stats.</p>
 </div>
 <div id="afl-tables" class="section level3">
 <h3>AFL tables</h3>
-<p><a href="https://afltables.com/afl/afl_index.html">AFL Tables</a> has historically been the main source of data in fitzRoy. It is the most complete source of data about AFL that exists (to our knowledge at least!). It contains data from 1897 and is the only data source included in fitzRoy with such historical data. The types of data it contains are results, ladders and stats.</p>
+<p><a href="https://afltables.com/afl/afl_index.html">AFL Tables</a> has
+historically been the main source of data in fitzRoy. It is the most
+complete source of data about AFL that exists (to our knowledge at
+least!). It contains data from 1897 and is the only data source included
+in fitzRoy with such historical data. The types of data it contains are
+results, ladders and stats.</p>
 </div>
 <div id="footywire" class="section level3">
 <h3>Footywire</h3>
-<p><a href="https://www.footywire.com/">Footywire</a> has traditionally been the main source of player statistics in fitzRoy. It contains data dating back to 2012 and was generally used as a supplement to AFL Tables data. The types of data it returns are results, fixtures and statistics.</p>
+<p><a href="https://www.footywire.com/">Footywire</a> has traditionally
+been the main source of player statistics in fitzRoy. It contains data
+dating back to 2012 and was generally used as a supplement to AFL Tables
+data. The types of data it returns are results, fixtures and
+statistics.</p>
 </div>
 <div id="squiggle" class="section level3">
 <h3>Squiggle</h3>
-<p><a href="https://squiggle.com.au/">Squiggle</a> is a famous AFL Prediction and Analysis website run by <a href="https://twitter.com/squiggleafl?lang=en">Max Barry</a>. In recent years, Squiggle has become the main place to aggregate various predictive models. Max has provided a nice and well documented <a href="https://api.squiggle.com.au/">API</a> that fitzRoy uses to return data. Helper functions included in the <code>fetch_</code> family will return results, fixtures and ladders but the <code>fetch_squiggle_data</code> function provides direct access to the API. Read the <a href="https://jimmyday12.github.io/fitzRoy/articles/using-squiggle-api.html">Squiggle API vignette</a> for more details.</p>
+<p><a href="https://squiggle.com.au/">Squiggle</a> is a famous AFL
+Prediction and Analysis website run by <a href="https://twitter.com/squiggleafl?lang=en">Max Barry</a>. In recent
+years, Squiggle has become the main place to aggregate various
+predictive models. Max has provided a nice and well documented <a href="https://api.squiggle.com.au/">API</a> that fitzRoy uses to return
+data. Helper functions included in the <code>fetch_</code> family will
+return results, fixtures and ladders but the
+<code>fetch_squiggle_data</code> function provides direct access to the
+API. Read the <a href="https://jimmyday12.github.io/fitzRoy/articles/using-squiggle-api.html">Squiggle
+API vignette</a> for more details.</p>
 </div>
 <div id="fryzigg" class="section level3">
 <h3>Fryzigg</h3>
-<p>Twitter user <a href="https://twitter.com/fryzigg?lang=en">Fryzigg</a> has provided access to some advanced player statistics. These are included in the <code>fetch_player_stats</code> function. Read the <a href="https://jimmyday12.github.io/fitzRoy/articles/using-fryzigg-stats.html">Fryzigg API vignette</a> for more information.</p>
+<p>Twitter user <a href="https://twitter.com/fryzigg?lang=en">Fryzigg</a> has provided
+access to some advanced player statistics. These are included in the
+<code>fetch_player_stats</code> function. Read the <a href="https://jimmyday12.github.io/fitzRoy/articles/using-fryzigg-stats.html">Fryzigg
+API vignette</a> for more information.</p>
 </div>
 </div>
 <div id="good-practices" class="section level2">
 <h2>Good practices</h2>
-<p>In most cases, trying to use the same source for all of your analysis will be most beneficial. This is not always possible as some sources only go back so far (the AFL website only has data back to 2011), while some data is not available (AFL Tables doesn’t have decent fixture data). If you are mixing sources, be careful to understand differences in naming structures, team names and player names.</p>
-<p>It is also a good idea to avoid regularly fetching whole datasets. Where possible, try to keep an off-line version of your data and only request the smallest amount possible to get the new data you require. This is both faster (less data transferred over your Internet connection and less data living in your computer memory) but also helps to reduce traffic on the data providers servers.</p>
+<p>In most cases, trying to use the same source for all of your analysis
+will be most beneficial. This is not always possible as some sources
+only go back so far (the AFL website only has data back to 2011), while
+some data is not available (AFL Tables doesn’t have decent fixture
+data). If you are mixing sources, be careful to understand differences
+in naming structures, team names and player names.</p>
+<p>It is also a good idea to avoid regularly fetching whole datasets.
+Where possible, try to keep an off-line version of your data and only
+request the smallest amount possible to get the new data you require.
+This is both faster (less data transferred over your Internet connection
+and less data living in your computer memory) but also helps to reduce
+traffic on the data providers servers.</p>
 </div>
 <div id="examples" class="section level2">
 <h2>Examples</h2>
 <div id="fixture" class="section level3">
 <h3>Fixture</h3>
-<p>Fixture data is available from multiple places. The most reliable and complete data usually comes from the AFL website. From that website you can specify either the Mens or Womens competitions using the <code>comp</code> argument.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>fixture &lt;-<span class="st"> </span><span class="kw">fetch_fixture</span>(<span class="dv">2021</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
-<span id="cb2-2"><a href="#cb2-2"></a>fixture <span class="op">%&gt;%</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="st">  </span><span class="kw">select</span>(utcStartTime, round.name, </span>
-<span id="cb2-4"><a href="#cb2-4"></a>         home.team.name, away.team.name, venue.name)</span></code></pre></div>
+<p>Fixture data is available from multiple places. The most reliable and
+complete data usually comes from the AFL website. From that website you
+can specify either the Mens or Womens competitions using the
+<code>comp</code> argument.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> <span class="fu">fetch_fixture</span>(<span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>fixture <span class="sc">%&gt;%</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(utcStartTime, round.name, </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>         home.team.name, away.team.name, venue.name)</span></code></pre></div>
 <p>If wanted, you could return just a single round.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">fetch_fixture</span>(<span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">5</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLM&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2"></a><span class="st">  </span><span class="kw">select</span>(utcStartTime, round.name, </span>
-<span id="cb3-3"><a href="#cb3-3"></a>         home.team.name, away.team.name, venue.name)</span></code></pre></div>
-<p>You can get results data from other sources including <code>Squiggle</code> and <code>Footywire</code>. The default source for <code>fetch_results()</code> is the AFL.com.au website.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>fixture_afl &lt;-<span class="st"> </span><span class="kw">fetch_fixture</span>(<span class="dv">2020</span>)</span>
-<span id="cb4-2"><a href="#cb4-2"></a>fixture_aflw &lt;-<span class="st"> </span><span class="kw">fetch_fixture</span>(<span class="dv">2020</span>, <span class="dt">round_number =</span> <span class="dv">1</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
-<span id="cb4-3"><a href="#cb4-3"></a>fixture_squiggle &lt;-<span class="st"> </span><span class="kw">fetch_fixture_squiggle</span>(<span class="dv">2020</span>, <span class="dt">round_number =</span> <span class="dv">10</span>)</span>
-<span id="cb4-4"><a href="#cb4-4"></a>fixture_footywire &lt;-<span class="st"> </span><span class="kw">fetch_fixture_squiggle</span>(<span class="dv">2018</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">5</span>, <span class="at">comp =</span> <span class="st">&quot;AFLM&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(utcStartTime, round.name, </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>         home.team.name, away.team.name, venue.name)</span></code></pre></div>
+<p>You can get results data from other sources including
+<code>Squiggle</code> and <code>Footywire</code>. The default source for
+<code>fetch_results()</code> is the AFL.com.au website.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fixture_afl <span class="ot">&lt;-</span> <span class="fu">fetch_fixture</span>(<span class="dv">2020</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fixture_aflw <span class="ot">&lt;-</span> <span class="fu">fetch_fixture</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">1</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>fixture_squiggle <span class="ot">&lt;-</span> <span class="fu">fetch_fixture_squiggle</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">10</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>fixture_footywire <span class="ot">&lt;-</span> <span class="fu">fetch_fixture_squiggle</span>(<span class="dv">2018</span>)</span></code></pre></div>
 </div>
 <div id="lineup" class="section level3">
 <h3>Lineup</h3>
-<p>You can get the lineup for a particular round. This is usually useful when running after the teams have been announced but before the match has been played.</p>
+<p>You can get the lineup for a particular round. This is usually useful
+when running after the teams have been announced but before the match
+has been played.</p>
 <p>The only data source with lineup data is the AFL.com.au website.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">fetch_lineup</span>(<span class="dv">2021</span>, <span class="dt">round_number =</span> <span class="dv">1</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="st">  </span><span class="kw">select</span>(round.name, status, teamName, </span>
-<span id="cb5-3"><a href="#cb5-3"></a>         player.playerName.givenName,</span>
-<span id="cb5-4"><a href="#cb5-4"></a>         player.playerName.surname, teamStatus)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_lineup</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">1</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(round.name, status, teamName, </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>         player.playerName.givenName,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>         player.playerName.surname, teamStatus)</span></code></pre></div>
 </div>
 <div id="results" class="section level3">
 <h3>Results</h3>
-<p>You can access AFL match results data from various sources. The most complete is the <a href="http://www.afltables.com">AFL Tables</a> data, which includes all matches from 1897-current.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>results &lt;-<span class="st"> </span><span class="kw">fetch_match_results_afltables</span>(<span class="dv">1897</span><span class="op">:</span><span class="dv">2019</span>)</span>
-<span id="cb6-2"><a href="#cb6-2"></a>results</span></code></pre></div>
-<p>While it is possible to return all historical data, it is usually good practice to only return a small amount of data - such as a single season or round - and keep your own offline database of historical data.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>results_new &lt;-<span class="st"> </span><span class="kw">fetch_results_afltables</span>(<span class="dv">2021</span>)</span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">bind_rows</span>(results, results_new)</span></code></pre></div>
-<p>You can get results data from other sources including <code>AFL</code>, <code>Squiggle</code> and <code>Footywire</code>. The default source for <code>fetch_results()</code> is the AFL.com.au website.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>results_afl &lt;-<span class="st"> </span><span class="kw">fetch_results</span>(<span class="dv">2020</span>, <span class="dt">round_number =</span> <span class="dv">11</span>)</span>
-<span id="cb8-2"><a href="#cb8-2"></a>results_aflw &lt;-<span class="st"> </span><span class="kw">fetch_results</span>(<span class="dv">2020</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
-<span id="cb8-3"><a href="#cb8-3"></a>results_squiggle &lt;-<span class="st"> </span><span class="kw">fetch_results_squiggle</span>(<span class="dv">2019</span>, <span class="dt">round_number =</span> <span class="dv">1</span>)</span>
-<span id="cb8-4"><a href="#cb8-4"></a>results_footywire &lt;-<span class="st"> </span><span class="kw">fetch_results_footywire</span>(<span class="dv">1990</span>)</span></code></pre></div>
+<p>You can access AFL match results data from various sources. The most
+complete is the <a href="https://afltables.com/afl/afl_index.html">AFL
+Tables</a> data, which includes all matches from 1897-current.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">fetch_match_results_afltables</span>(<span class="dv">1897</span><span class="sc">:</span><span class="dv">2019</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>results</span></code></pre></div>
+<p>While it is possible to return all historical data, it is usually
+good practice to only return a small amount of data - such as a single
+season or round - and keep your own offline database of historical
+data.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>results_new <span class="ot">&lt;-</span> <span class="fu">fetch_results_afltables</span>(<span class="dv">2021</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(results, results_new)</span></code></pre></div>
+<p>You can get results data from other sources including
+<code>AFL</code>, <code>Squiggle</code> and <code>Footywire</code>. The
+default source for <code>fetch_results()</code> is the AFL.com.au
+website.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>results_afl <span class="ot">&lt;-</span> <span class="fu">fetch_results</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">11</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>results_aflw <span class="ot">&lt;-</span> <span class="fu">fetch_results</span>(<span class="dv">2020</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>results_squiggle <span class="ot">&lt;-</span> <span class="fu">fetch_results_squiggle</span>(<span class="dv">2019</span>, <span class="at">round_number =</span> <span class="dv">1</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>results_footywire <span class="ot">&lt;-</span> <span class="fu">fetch_results_footywire</span>(<span class="dv">1990</span>)</span></code></pre></div>
 <p>You can get AFLW results by using the <code>comp</code> argument.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">fetch_results</span>(<span class="dv">2020</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="st">  </span><span class="kw">select</span>(match.name, venue.name, round.name,</span>
-<span id="cb9-3"><a href="#cb9-3"></a>         homeTeamScore.matchScore.totalScore,</span>
-<span id="cb9-4"><a href="#cb9-4"></a>         awayTeamScore.matchScore.totalScore)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_results</span>(<span class="dv">2020</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(match.name, venue.name, round.name,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>         homeTeamScore.matchScore.totalScore,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>         awayTeamScore.matchScore.totalScore)</span></code></pre></div>
 </div>
 <div id="ladder" class="section level3">
 <h3>Ladder</h3>
-<p>The ladder for a particular round can be returned using <code>fetch_ladder</code>. Usually this only makes sense to return for one round at a time, although it is possible to return multiple rounds.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>ladder &lt;-<span class="st"> </span><span class="kw">fetch_ladder</span>(<span class="dv">2020</span>, <span class="dt">round_number =</span> <span class="dv">7</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="op">%&gt;%</span></span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="st">  </span><span class="kw">select</span>(season, round_name, position, </span>
-<span id="cb10-3"><a href="#cb10-3"></a>         team.name, pointsFor, pointsAgainst, form)</span>
-<span id="cb10-4"><a href="#cb10-4"></a>ladder</span></code></pre></div>
+<p>The ladder for a particular round can be returned using
+<code>fetch_ladder</code>. Usually this only makes sense to return for
+one round at a time, although it is possible to return multiple
+rounds.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>ladder <span class="ot">&lt;-</span> <span class="fu">fetch_ladder</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">7</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(season, round_name, position, </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>         team.name, pointsFor, pointsAgainst, form)</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>ladder</span></code></pre></div>
 <p>There are many variables included in the AFL.com.au ladder.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>ladder &lt;-<span class="st"> </span><span class="kw">fetch_ladder</span>(<span class="dv">2020</span>, <span class="dt">round_number =</span> <span class="dv">7</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
-<span id="cb11-2"><a href="#cb11-2"></a><span class="kw">ncol</span>(ladder)</span></code></pre></div>
-<p>You can get ladder data from other sources including <code>Squiggle</code> and <code>Afltables</code>. The default source for <code>fetch_ladder()</code> is the AFL.com.au website.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>ladder_afl &lt;-<span class="st"> </span><span class="kw">fetch_ladder</span>(<span class="dv">2020</span>, <span class="dt">round_number =</span> <span class="dv">11</span>)</span>
-<span id="cb12-2"><a href="#cb12-2"></a>ladder_aflw &lt;-<span class="st"> </span><span class="kw">fetch_ladder</span>(<span class="dv">2020</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
-<span id="cb12-3"><a href="#cb12-3"></a>ladder_squiggle &lt;-<span class="st"> </span><span class="kw">fetch_ladder_squiggle</span>(<span class="dv">2019</span>, <span class="dt">round_number =</span> <span class="dv">1</span>)</span>
-<span id="cb12-4"><a href="#cb12-4"></a>ladder_afltables &lt;-<span class="st"> </span><span class="kw">fetch_ladder_afltables</span>(<span class="dv">1990</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ladder <span class="ot">&lt;-</span> <span class="fu">fetch_ladder</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">7</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ncol</span>(ladder)</span></code></pre></div>
+<p>You can get ladder data from other sources including
+<code>Squiggle</code> and <code>Afltables</code>. The default source for
+<code>fetch_ladder()</code> is the AFL.com.au website.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ladder_afl <span class="ot">&lt;-</span> <span class="fu">fetch_ladder</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">11</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ladder_aflw <span class="ot">&lt;-</span> <span class="fu">fetch_ladder</span>(<span class="dv">2020</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>ladder_squiggle <span class="ot">&lt;-</span> <span class="fu">fetch_ladder_squiggle</span>(<span class="dv">2019</span>, <span class="at">round_number =</span> <span class="dv">1</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>ladder_afltables <span class="ot">&lt;-</span> <span class="fu">fetch_ladder_afltables</span>(<span class="dv">1990</span>)</span></code></pre></div>
 </div>
 <div id="stats" class="section level3">
 <h3>Stats</h3>
-<p>We can return player statistics for a set of matches. The exact stats that are included varies quite a bit between data sources.</p>
-<p>The default is again the AFL.com.au which is fairly comprehensive.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">fetch_player_stats</span>(<span class="dv">2020</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span></code></pre></div>
+<p>We can return player statistics for a set of matches. The exact stats
+that are included varies quite a bit between data sources.</p>
+<p>The default is again the AFL.com.au which is fairly
+comprehensive.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_player_stats</span>(<span class="dv">2020</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span></code></pre></div>
 <p>We also have detailed player stats courtesy of Fryzigg.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">fetch_player_stats</span>(<span class="dv">2019</span>, <span class="dt">source =</span> <span class="st">&quot;fryzigg&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_player_stats</span>(<span class="dv">2019</span>, <span class="at">source =</span> <span class="st">&quot;fryzigg&quot;</span>)</span></code></pre></div>
 <p>Other providers include Afltables and Footywire.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>stats_afl &lt;-<span class="st"> </span><span class="kw">fetch_player_stats</span>(<span class="dv">2020</span>, <span class="dt">round_number =</span> <span class="dv">11</span>)</span>
-<span id="cb15-2"><a href="#cb15-2"></a>stats_aflw &lt;-<span class="st"> </span><span class="kw">fetch_player_stats</span>(<span class="dv">2020</span>, <span class="dt">source =</span> <span class="st">&quot;AFL&quot;</span>, <span class="dt">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
-<span id="cb15-3"><a href="#cb15-3"></a>stats_footywire &lt;-<span class="st"> </span><span class="kw">fetch_player_stats</span>(<span class="dv">2019</span>, <span class="dt">round_number =</span> <span class="dv">1</span>, <span class="dt">source =</span> <span class="st">&quot;footywire&quot;</span>)</span>
-<span id="cb15-4"><a href="#cb15-4"></a>stats_afltables &lt;-<span class="st"> </span><span class="kw">fetch_player_stats_afltables</span>(<span class="dv">1990</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>stats_afl <span class="ot">&lt;-</span> <span class="fu">fetch_player_stats</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">11</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>stats_aflw <span class="ot">&lt;-</span> <span class="fu">fetch_player_stats</span>(<span class="dv">2020</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>stats_footywire <span class="ot">&lt;-</span> <span class="fu">fetch_player_stats</span>(<span class="dv">2019</span>, <span class="at">round_number =</span> <span class="dv">1</span>, <span class="at">source =</span> <span class="st">&quot;footywire&quot;</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>stats_afltables <span class="ot">&lt;-</span> <span class="fu">fetch_player_stats_afltables</span>(<span class="dv">1990</span>)</span></code></pre></div>
 </div>
 <div id="apis" class="section level3">
 <h3>API’s</h3>
-<p>You can view how to return data from two providers using their API’s at the respective Vignettes.</p>
+<p>You can view how to return data from two providers using their API’s
+at the respective Vignettes.</p>
 <ul>
-<li><a href="https://jimmyday12.github.io/fitzRoy/articles/using-squiggle-api.html">Using the Squiggle API</a></li>
-<li><a href="https://jimmyday12.github.io/fitzRoy/articles/using-fryzigg-stats.html">Using the Fryzigg API</a></li>
+<li><a href="https://jimmyday12.github.io/fitzRoy/articles/using-squiggle-api.html">Using
+the Squiggle API</a></li>
+<li><a href="https://jimmyday12.github.io/fitzRoy/articles/using-fryzigg-stats.html">Using
+the Fryzigg API</a></li>
 </ul>
 </div>
 </div>

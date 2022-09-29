@@ -13,11 +13,17 @@ test_that("fetch_lineup_afl works for various inputs", {
   # change round number
   expect_s3_class(fetch_lineup_afl(2020, round_number = 1), "tbl")
   expect_s3_class(fetch_lineup_afl(2020, round_number = 2), "tbl")
-  expect_error(fetch_lineup_afl(2020, round_number = 50))
+  expect_null(fetch_lineup_afl(2020, round_number = 50), "tbl")
 
   # change comp
   expect_s3_class(fetch_lineup_afl(2020, round_number = 1, comp = "AFLW"), "tbl")
   expect_error(fetch_lineup_afl(2020, round_number = 1, comp = "test"))
+  
+  # Check future year and round
+  current_year <- as.numeric(substr(Sys.Date(),1,4))
+  expect_null(fetch_lineup_afl(current_year + 1, round_number = 1, comp = "AFLM"))
+  #expect_null(fetch_lineup_afl(current_year, round_number = 23, comp = "AFLM"))
+  
 })
 
 
@@ -120,4 +126,17 @@ test_that("round numbers don't increment across bye weeks without matches", {
 
   expect_warning(fixture_rounds <- get_fixture(2019)$Round)
   expect_equal(calculate_max_round_lag(fixture_rounds), 1)
+})
+
+test_that("fetch_lineup works for non-AFL leagues", {
+  testthat::skip_if_offline()
+  testthat::skip_on_cran()
+  
+  # Test each source works
+  expect_s3_class(fetch_lineup(2022, round_number = 1, source = "AFL", comp = "WAFL"), "tbl")
+  expect_s3_class(fetch_lineup(2022, round_number = 1, source = "AFL", comp = "VFL"), "tbl")
+  expect_s3_class(fetch_lineup(2022, round_number = 1, source = "AFL", comp = "VFLW"), "tbl")
+  expect_s3_class(fetch_lineup(2022, round_number = 1, source = "AFL", comp = "U18B"), "tbl")
+  expect_s3_class(fetch_lineup(2022, round_number = 1, source = "AFL", comp = "U18G"), "tbl")
+  
 })

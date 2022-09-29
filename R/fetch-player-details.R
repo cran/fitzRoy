@@ -18,8 +18,7 @@
 #' @param source One of "AFL" (default), "footywire", "afltables"
 #' @param ... Optional parameters passed onto various functions depending on source.
 #'
-#' @return
-#' A Tibble with the details of the relevant players.
+#' @return A Tibble with the details of the relevant players.
 #' @export
 #'
 #' @examples
@@ -76,9 +75,10 @@ fetch_player_details <- function(team = NULL,
 }
 
 #' @param season Season in YYYY format
+#' @param official_teams boolean, defaults to FALSE. Indicates if we should match `team` to the official list from the API. If this is TRUE, it will use the list from the API and uou can use `fetch_teams_afl` to see what these names should be
 #' @rdname fetch_player_details
 #' @export
-fetch_player_details_afl <- function(season, team = NULL, comp = "AFLM") {
+fetch_player_details_afl <- function(season, team = NULL, comp = "AFLM", official_teams = FALSE) {
 
   # perform some validation
   season <- check_season(season)
@@ -86,30 +86,35 @@ fetch_player_details_afl <- function(season, team = NULL, comp = "AFLM") {
 
   # get season id
   comp_seas_id <- find_season_id(season, comp)
+  
+  if (!comp %in% c("AFLM", "AFLW")) official_teams <- TRUE
 
   # return team abbreviation
   if (!is.null(team)) {
-    team_check_afl(team)
-    team_abr <- team_abr_afl(team)
-    team_ids <- find_team_id(team_abr, comp)
-    team_names <- team
+    if (official_teams) {
+      team_check_afl2(team, comp)
+      team_abr <- team_abr_afl2(team, comp)
+      team_ids <- find_team_id(team_abr, comp)
+      team_names <- team  
+    } else {
+      team_check_afl(team)
+      team_abr <- team_abr_afl(team)
+      team_ids <- find_team_id(team_abr, comp)
+      team_names <- team
+    }
+    
   } else {
-    team_dat <- find_team_id(team)
+    team_dat <- find_team_id(team, comp = comp)
     team_ids <- team_dat$id
     team_names <- team_dat$name
   }
 
-  df <- team_ids %>%
-    purrr::map2_dfr(
-      .y = team_names,
-      ~ fetch_squad_afl(
-        teamId = .x,
-        team = .y,
-        season = season,
-        compSeasonId = comp_seas_id
-      )
-    )
-
+  args <- list(teamId = team_ids,
+               team = team_names,
+               compSeasonId = comp_seas_id)
+  
+  df <- purrr::pmap_dfr(args, fetch_squad_afl, season = season)
+  
   df %>%
     dplyr::mutate(data_accessed = Sys.Date())
 }
