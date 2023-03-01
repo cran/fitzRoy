@@ -11,7 +11,7 @@
 #' @keywords internal
 #' @noRd
 scrape_afltables_match <- function(match_urls) {
-
+  
   # For each game url, download data, extract the stats
   # tables #3 and #5 and bind together
   cli::cli_process_start("Downloading data")
@@ -31,7 +31,7 @@ scrape_afltables_match <- function(match_urls) {
 
 
   replace_names <- function(x) {
-    names(x) <- x[1, ]
+    names(x) <- as.character(x[1, ])
     x[-1, ]
   }
 
@@ -141,13 +141,13 @@ scrape_afltables_match <- function(match_urls) {
   names(games_df) <- make.names(names(games_df))
 
   # nolint start
-  if ("X." %in% names(games_df)) games_df <- dplyr::rename(games_df, Jumper.No. = .data$X.)
+  if ("X." %in% names(games_df)) games_df <- dplyr::rename(games_df, Jumper.No. = "X.")
   if ("X1." %in% names(games_df)) {
     games_df <- dplyr::rename(games_df,
-      One.Percenters = .data$X1.
+      One.Percenters = "X1."
     )
   }
-  if ("X.P" %in% names(games_df)) games_df <- dplyr::rename(games_df, TOG = .data$X.P)
+  if ("X.P" %in% names(games_df)) games_df <- dplyr::rename(games_df, TOG = "X.P")
   # nolint end
 
   # change column types
@@ -162,11 +162,11 @@ scrape_afltables_match <- function(match_urls) {
       Date = lubridate::ymd(format(.data$Date, "%Y-%m-%d")),
       Season = as.integer(lubridate::year(.data$Date))
     ) %>%
-    tidyr::separate(.data$Player,
+    tidyr::separate("Player",
       into = c("Surname", "First.name"), sep = ","
     ) %>%
     dplyr::mutate_at(c("Surname", "First.name"), stringr::str_squish) %>%
-    tidyr::separate(.data$Umpires,
+    tidyr::separate("Umpires",
       into = c(
         "Umpire.1", "Umpire.2",
         "Umpire.3", "Umpire.4"
@@ -180,7 +180,7 @@ scrape_afltables_match <- function(match_urls) {
 
   sep <- function(...) {
     dots <- list(...)
-    tidyr::separate_(..., into = sprintf(
+    tidyr::separate(..., into = sprintf(
       "%s%s", dots[[2]],
       c("G", "B", "P")
     ), sep = "\\.")
@@ -192,8 +192,8 @@ scrape_afltables_match <- function(match_urls) {
     dplyr::mutate_at(dplyr::vars(dplyr::contains("HQ")), as.integer) %>%
     dplyr::mutate_at(dplyr::vars(dplyr::contains("AQ")), as.integer) %>%
     dplyr::rename(
-      Home.score = .data$HQ4P,
-      Away.score = .data$AQ4P
+      Home.score = "HQ4P",
+      Away.score = "AQ4P"
     )
 
   ids <- get_afltables_player_ids(
@@ -205,7 +205,7 @@ scrape_afltables_match <- function(match_urls) {
     dplyr::left_join(ids,
       by = c("Season", "Player", "Playing.for" = "Team")
     ) %>%
-    dplyr::select(-.data$Player)
+    dplyr::select(-"Player")
 
   df <- games_joined %>%
     dplyr::rename(!!!rlang::syms(with(stat_abbr, setNames(stat.abb, stat))))
@@ -343,16 +343,17 @@ get_afltables_player_ids <- function(seasons) {
   }
 
   start <- 2017
-  end <- max(max(seasons), Sys.Date() %>% format("%Y") %>% as.numeric())
+  
+  # need to check if the current years season has started
+  current_year <- Sys.Date() %>% format("%Y") %>% as.numeric()
+  end <- max(max(seasons), current_year)
 
   urls <- purrr::map_chr(start:end, base_url)
 
   ids_new <- urls %>%
+    purrr::set_names() %>%
     purrr::map(readUrl) %>%
-    purrr::discard(~ nrow(.x) == 0)
-
-
-  first_populated_season <- end - length(ids_new) + 1
+    purrr::discard(~ nrow(.x) == 0) 
 
   # Some DFs have numeric columns as 'chr' and some have them as 'dbl',
   # so we need to make them consistent before joining to avoid type errors
@@ -360,12 +361,12 @@ get_afltables_player_ids <- function(seasons) {
   cols_to_convert <- intersect(mixed_cols, colnames(ids_new[[1]]))
 
   ids_new <- ids_new %>%
-    purrr::map(~ dplyr::mutate_at(., cols_to_convert, as.character)) %>%
-    purrr::map2_dfr(
-      .y = first_populated_season:end,
-      ~ dplyr::mutate(., Season = .y)
-    )
-
+    purrr::map_dfr(~ dplyr::mutate_at(., cols_to_convert, as.character),
+                   .id = "Season") %>%
+    dplyr::mutate(Season = stringr::str_remove(.data$Season, "https://afltables.com/afl/stats/"),
+                  Season = stringr::str_remove(.data$Season, "_stats.txt"),
+                  Season = as.numeric(.data$Season))
+  
   if (nrow(ids_new) < 1) {
     return(ids)
   }
@@ -373,7 +374,7 @@ get_afltables_player_ids <- function(seasons) {
   ids_new <- ids_new %>%
     dplyr::select(!!col_vars) %>%
     dplyr::distinct() %>%
-    dplyr::rename(Team.abb = .data$Team)  %>%
+    dplyr::rename(Team.abb = "Team")  %>%
     dplyr::left_join(team_abbr, by = c("Team.abb" = "Team.abb")) %>%
     dplyr::select(!!col_vars)
   

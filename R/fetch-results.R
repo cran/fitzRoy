@@ -60,6 +60,11 @@ fetch_results <- function(season = NULL,
   # Do some data checks
   season <- check_season(season)
   check_comp_source(comp, source)
+  
+  if(!source %in% c("AFL", "afltables", "squiggle", "footywire")) {
+    rlang::warn(glue::glue("The source \"{source}\" does not have Results data. Please use one of \"AFL\", \"afltables\", \"footywire\" or \"squiggle\""))
+    return(NULL)
+  }
 
   dat <- switch(source,
     "AFL" = fetch_results_afl(season, round_number, comp),
@@ -68,8 +73,7 @@ fetch_results <- function(season = NULL,
     "squiggle" = fetch_results_squiggle(season, round_number),
     NULL
   )
-
-  if (is.null(dat)) rlang::warn(glue::glue("The source \"{source}\" does not have Results data. Please use one of \"AFL\", \"afltables\", \"footywire\" or \"squiggle\""))
+  
   return(dat)
 }
 
@@ -81,9 +85,10 @@ fetch_results_afl <- function(season = NULL, round_number = NULL, comp = "AFLM")
   season_id <- find_season_id(season, comp)
 
   if (is.null(season_id)) {
-    rlang::warn(glue::glue("No data found for season {season} on AFL.com.au"))
+    rlang::warn(glue::glue("No results data found for season {season} on AFL.com.au for {comp}"))
     return(NULL)
   }
+  
   round_ids <- season_id %>%
     purrr::map(~ find_round_id(round_number,
       season_id = .x,
@@ -137,11 +142,11 @@ fetch_results_afltables <- function(season = NULL, round_number = NULL) {
 
   # Separate score out into components ----
   match_data <- match_data %>%
-    tidyr::separate(.data$Home.Score,
+    tidyr::separate("Home.Score",
       into = c("Home.Goals", "Home.Behinds", "Home.Points"),
       sep = "\\.", convert = TRUE
     ) %>%
-    tidyr::separate(.data$Away.Score,
+    tidyr::separate("Away.Score",
       into = c("Away.Goals", "Away.Behinds", "Away.Points"),
       sep = "\\.", convert = TRUE
     )
@@ -189,7 +194,7 @@ fetch_results_afltables <- function(season = NULL, round_number = NULL) {
   match_data <- match_data %>%
     dplyr::group_by(.data$Season) %>%
     dplyr::mutate(Round.Number = dplyr::dense_rank(.data$Round.New)) %>%
-    dplyr::select(-.data$Round.New) %>%
+    dplyr::select(-"Round.New") %>%
     dplyr::ungroup()
 
   # Filter out round

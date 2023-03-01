@@ -76,8 +76,16 @@ fetch_player_stats_afl <- function(season = NULL, round_number = NULL, comp = "A
   # Get match ids
   cli_id1 <- cli::cli_process_start("Fetching match ids")
   matches <- suppressMessages(fetch_fixture_afl(season, round_number, comp))
+  
+  if (is.null(matches)) {
+    rlang::warn(glue::glue("No player stats data found for season {season} on AFL.com.au for {comp}"))
+    return(NULL)
+  }
+  
+  
   ids <- matches$providerId
   if (length(ids) == 0) {
+    rlang::warn(glue::glue("No player stats data found for season {season} on AFL.com.au for {comp}"))
     return(NULL)
   }
   cli::cli_process_done(cli_id1)
@@ -86,13 +94,19 @@ fetch_player_stats_afl <- function(season = NULL, round_number = NULL, comp = "A
   cookie <- get_afl_cookie()
 
   # Loop through each match
-  cli_id2 <- cli::cli_process_start("Fetching player stats for {.val {length(ids)} match{?es}}.")
+  cli_id2 <- cli::cli_process_start("Finding player stats for {.val {length(ids)}} match{?es}.")
   match_stats <- ids %>%
     purrr::map_dfr(purrr::possibly(~ fetch_match_stats_afl(.x, cookie),
       otherwise = data.frame()
     ))
   cli::cli_process_done(cli_id2)
 
+  if(nrow(match_stats) == 0) {
+    cli::cli_alert_info("No completed matches found")
+    return(NULL)
+    
+  }
+  
   # add match details
   vars <- c("providerId", "utcStartTime", "status", 
             "compSeason.shortName", "round.name", "round.roundNumber", 
@@ -113,19 +127,18 @@ fetch_player_stats_afl <- function(season = NULL, round_number = NULL, comp = "A
 
   teams <- dplyr::bind_rows(home_teams, away_teams) %>%
     unique() %>%
-    dplyr::rename(team.name = .data$name)
-
+    dplyr::rename(team.name = "name")
 
   df <- match_details %>%
-    dplyr::left_join(match_stats, by = c("providerId")) %>%
-    dplyr::left_join(teams, by = c("teamId" = "providerId"))
+    dplyr::left_join(match_stats, by = c("providerId"), multiple = "all") %>%
+    dplyr::left_join(teams, by = c("teamId" = "providerId"), multiple = "all")
 
   return(df)
 }
 
 
-#' @param rescrape Logical, defaults to FALSE. Determinse if we should rescrape data for a given season. By default, we return cached data which is much faster. Rescraping is slow but sometimes needed if historical data has changed. 
-#' @param rescrape_start_season Numeric, if rescrape = TRUE, which season should we start scraping from. Defaults to minimum value of season
+#' @param rescrape Logical, defaults to FALSE. Determines if we should re-scrape data for a given season. By default, we return cached data which is much faster. Re-scraping is slow but sometimes needed if historical data has changed. 
+#' @param rescrape_start_season Numeric, if `rescrape = TRUE`, which season should we start scraping from. Defaults to minimum value of season
 #'
 #' @rdname fetch_player_stats
 #' @export
@@ -337,3 +350,4 @@ fetch_player_stats_footywire <- function(season = NULL, round_number = NULL, che
     return(tibble::as_tibble(dat))
   }
 }
+

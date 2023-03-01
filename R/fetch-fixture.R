@@ -79,8 +79,14 @@ fetch_fixture_afl <- function(season = NULL, round_number = NULL, comp = "AFLM")
     rnd_msg <- paste0("Round ", round_number, ", ", season)
   }
 
-  cli::cli_progress_step("Returning data for {.val {rnd_msg}}")
+  cli_id <- cli::cli_process_start("Returning data for {.val {rnd_msg}}")
   comp_seas_id <- find_season_id(season, comp)
+  
+  if (is.null(comp_seas_id)) {
+    rlang::warn(glue::glue("No fixture data found for season {season} on AFL.com.au for {comp}"))
+    return(NULL)
+  }
+  
   comp_id <- find_comp_id(comp)
 
   match_request <- function(comp_seas_id, comp_id, round_number) {
@@ -100,6 +106,7 @@ fetch_fixture_afl <- function(season = NULL, round_number = NULL, comp = "AFLM")
       httr::content(as = "text", encoding = "UTF-8") %>%
       jsonlite::fromJSON(flatten = TRUE)
     
+    cli::cli_process_done(cli_id)
     df <- dplyr::as_tibble(cont$matches)
     
   }
@@ -176,7 +183,7 @@ Check the following url on footywire
   games_df <- matrix(games_text, ncol = 8, byrow = TRUE) %>%
     as.data.frame() %>%
     tibble::as_tibble() %>%
-    dplyr::select(.data$V1:.data$V4)
+    dplyr::select("V1":"V4")
 
   # Update names
   names(games_df) <- c("Round.Name", "Date", "Teams", "Venue")
@@ -204,7 +211,7 @@ Check the following url on footywire
   # Fix names
   games_df <- games_df %>%
     dplyr::group_by(.data$Date, .data$Round, .data$Venue) %>%
-    tidyr::separate(.data$Teams,
+    tidyr::separate("Teams",
       into = c("Home.Team", "Away.Team"),
       sep = "\\\nv\\s\\\n"
     ) %>%
@@ -227,8 +234,8 @@ Check the following url on footywire
   # Tidy columns
   games_df <- games_df %>%
     dplyr::select(
-      .data$Date, .data$Season, .data$Season.Game, .data$Round,
-      .data$Home.Team, .data$Away.Team, .data$Venue
+      "Date", "Season", "Season.Game", "Round",
+      "Home.Team", "Away.Team", "Venue"
     )
   if (convert_date == TRUE) {
     games_df$Date <- as.Date(format(games_df$Date, "%Y-%m-%d"))
