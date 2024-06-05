@@ -393,26 +393,26 @@ Not all data sources will have non-AFL data.</li>
 <p>All of the functions behave the same. The following are some examples
 using the <code>fetch_fixture</code> function but can equally be applied
 to any of the family of <code>fetch_</code> functions.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2021</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2021</span>)</span></code></pre></div>
 <p>This is the same as</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>) </span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLM&quot;</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>) </span></code></pre></div>
 <p>We can return just one round instead of the whole fixture.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(compSeason.name, round.name, home.team.name, away.team.name, venue.name)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">select</span>(compSeason.name, round.name, home.team.name, away.team.name, venue.name)</span></code></pre></div>
 <p>We could also return the AFLW fixture instead.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(compSeason.name, round.name, </span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>         home.team.name, away.team.name, </span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>         venue.name)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">select</span>(compSeason.name, round.name, </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>         home.team.name, away.team.name, </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>         venue.name)</span></code></pre></div>
 <p>Lastly - we can choose a different source. Note that the field names
 and even the names of the teams and/or venues will be different for
 difference sources.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">1</span>, <span class="at">source =</span> <span class="st">&quot;squiggle&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">1</span>, <span class="at">source =</span> <span class="st">&quot;squiggle&quot;</span>)</span></code></pre></div>
 <p>It should also be noted that the various sources of data have their
 own functions that can be called directly.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The following are the same</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">5</span>, <span class="at">source =</span> <span class="st">&quot;squiggle&quot;</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture_squiggle</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># The following are the same</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">5</span>, <span class="at">source =</span> <span class="st">&quot;squiggle&quot;</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">fetch_fixture_squiggle</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">5</span>)</span></code></pre></div>
 </div>
 <div id="womens-data" class="section level2">
 <h2>Womens Data</h2>
@@ -431,9 +431,9 @@ Womens Vingette</a> for specific examples.</p>
 related data. This only works for the source <code>AFL</code> but there
 are other comps that are available. These comps do not have as much data
 as the AFLM and AFLW comps but some functions will work.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2022</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>, <span class="at">comp =</span> <span class="st">&quot;VFL&quot;</span>)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_player_stats</span>(<span class="dv">2022</span>, <span class="at">round =</span> <span class="dv">1</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>, <span class="at">comp =</span> <span class="st">&quot;VFLW&quot;</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2022</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>, <span class="at">comp =</span> <span class="st">&quot;WAFL&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2022</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>, <span class="at">comp =</span> <span class="st">&quot;VFL&quot;</span>)</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">fetch_player_stats</span>(<span class="dv">2022</span>, <span class="at">round =</span> <span class="dv">1</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>, <span class="at">comp =</span> <span class="st">&quot;VFLW&quot;</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2022</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>, <span class="at">comp =</span> <span class="st">&quot;WAFL&quot;</span>)</span></code></pre></div>
 <p>Available comps include * “VFL” * “VFLW” * “WAFL” * “U18B” *
 “U18G”</p>
 </div>

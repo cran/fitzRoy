@@ -1,6 +1,6 @@
 Package: fitzRoy
 Title: Easily Scrape and Process AFL Data
-Version: 1.3.0
+Version: 1.4.0
 Authors@R: 
     c(person(given = "James",
              family = "Day",
@@ -31,14 +31,14 @@ Description: An easy package for scraping and processing Australia Rules Footbal
     from 'AFL Tables' <https://afltables.com/afl/afl_index.html>, 'Footy Wire' <https://www.footywire.com> and
     'The Squiggle' <https://squiggle.com.au>. Further functions allow for easy processing, 
     cleaning and transformation of this data into formats that can be used for analysis. 
-License: GPL-3
+License: MIT + file LICENSE
 URL: https://jimmyday12.github.io/fitzRoy/,
         https://github.com/jimmyday12/fitzRoy
 BugReports: https://github.com/jimmyday12/fitzRoy/issues
 Depends: R (>= 3.5)
 Imports: dplyr, httr, jsonlite, lubridate, magrittr, purrr, readr,
         rlang (>= 0.1.2), rvest, stringr (>= 1.3.0), tidyr (>= 1.0.0),
-        tidyselect, xml2, tibble, progress, glue, cli, lifecycle
+        tidyselect, xml2, tibble, glue, cli, lifecycle, httr2
 Suggests: covr, elo, ggplot2, knitr, rmarkdown, testthat (>= 3.0.0),
         roxygen2, spelling, curl
 VignetteBuilder: knitr
@@ -47,10 +47,10 @@ Encoding: UTF-8
 RoxygenNote: 7.2.3
 Language: en-US
 Config/testthat/edition: 3
-Config/testthat/start-first: fetch-player-stats,
-        fetch-player-stats-legacy, fetch*
+Config/testthat/parallel: true
+Config/testthat/start-first: fetch-player-stats, fetch*
 NeedsCompilation: no
-Packaged: 2023-03-01 06:14:50 UTC; jamesday
+Packaged: 2024-06-05 05:15:24 UTC; jamesday
 Author: James Day [cre, aut],
   Robert Nguyen [aut],
   Matthew Erbs [ctb],
@@ -59,4 +59,4 @@ Author: James Day [cre, aut],
   Jacob Holden [ctb]
 Maintainer: James Day <jamesthomasday@gmail.com>
 Repository: CRAN
-Date/Publication: 2023-03-01 08:32:29 UTC
+Date/Publication: 2024-06-05 05:30:03 UTC

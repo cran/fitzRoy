@@ -353,13 +353,13 @@ this API interface.</p>
 <code>fetch_fryzigg_stats()</code> function. This function provides an
 easy interface to the Fryzigg API. It takes one arguments -
 <code>season</code> which can be a single year or multiple years.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> fitzRoy<span class="sc">::</span><span class="fu">fetch_player_stats_fryzigg</span>(<span class="dv">2019</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>dat <span class="ot">&lt;-</span> fitzRoy<span class="sc">::</span><span class="fu">fetch_player_stats_fryzigg</span>(<span class="dv">2019</span>)</span></code></pre></div>
 <p>We can get a quick view the the fields returned from the
 <code>fryzigg</code> API.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">glimpse</span>(dat)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">glimpse</span>(dat)</span></code></pre></div>
 <p>You can see the data includes both player and team data, where each
 row is a game by a player.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dat)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">head</span>(dat)</span></code></pre></div>
 </div>
 </div>
 

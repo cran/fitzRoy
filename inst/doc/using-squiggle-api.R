@@ -16,10 +16,10 @@ knitr::opts_chunk$set(
 #  library(fitzRoy)
 #  library(dplyr)
 
-## ---- squiggle_games, include=TRUE,eval=FALSE---------------------------------
+## ----squiggle_games, include=TRUE,eval=FALSE----------------------------------
 #  fetch_squiggle_data(query = "games", year = 2020)
 
-## ---- squiggle_game_included, echo=FALSE, eval=eval_param---------------------
+## ----squiggle_game_included, echo=FALSE, eval=eval_param----------------------
 #  fitzRoy:::squiggle_games %>% filter(year == 2020)
 
 ## ----squiggle_teams, include=TRUE, eval=FALSE---------------------------------

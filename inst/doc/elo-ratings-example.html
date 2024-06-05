@@ -12,7 +12,7 @@
 
 <meta name="author" content="James Day" />
 
-<meta name="date" content="2023-03-01" />
+<meta name="date" content="2024-06-05" />
 
 <title>ELO Ratings Example</title>
 
@@ -340,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">ELO Ratings Example</h1>
 <h4 class="author">James Day</h4>
-<h4 class="date">2023-03-01</h4>
+<h4 class="date">2024-06-05</h4>
 
 
 
@@ -355,10 +355,10 @@ to do the modelling.</p>
 <h2>Load packages</h2>
 <p>First we need to grab a few packages. If you don’t have any of these,
 you’ll need to install them.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fitzRoy)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(elo)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(fitzRoy)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(elo)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span></code></pre></div>
 </div>
 <div id="get-data" class="section level2">
 <h2>Get data</h2>
@@ -372,15 +372,15 @@ things using <code>fitzRoy</code>.</p>
 fine, it can cause issues with teams, dates, venues or various other
 data to be inconsistent. This example will try to show some ways to take
 that into account.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get data</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> fitzRoy<span class="sc">::</span><span class="fu">fetch_results_afltables</span>(<span class="dv">1897</span><span class="sc">:</span><span class="dv">2019</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> fitzRoy<span class="sc">::</span><span class="fu">fetch_fixture_footywire</span>(<span class="dv">2019</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># Get data</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>results <span class="ot">&lt;-</span> fitzRoy<span class="sc">::</span><span class="fu">fetch_results_afltables</span>(<span class="dv">1897</span><span class="sc">:</span><span class="dv">2019</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> fitzRoy<span class="sc">::</span><span class="fu">fetch_fixture_footywire</span>(<span class="dv">2019</span>)</span></code></pre></div>
 <p>We can make sure our results are from before the fixture we are
 trying to predict for.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> results <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Date <span class="sc">&lt;</span> <span class="st">&quot;2019-01-01&quot;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(results)</span></code></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> fixture <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Date <span class="sc">&gt;</span> <span class="st">&quot;2019-01-01&quot;</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fixture)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>results <span class="ot">&lt;-</span> results <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Date <span class="sc">&lt;</span> <span class="st">&quot;2019-01-01&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="fu">tail</span>(results)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> fixture <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Date <span class="sc">&gt;</span> <span class="st">&quot;2019-01-01&quot;</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">head</span>(fixture)</span></code></pre></div>
 </div>
 <div id="prepare-data" class="section level2">
 <h2>Prepare data</h2>
@@ -388,18 +388,18 @@ trying to predict for.</p>
 we are using, we need a way to identify each round as a separate match,
 so we’ll combine <code>season</code> and <code>Round.Number</code> into
 a string as a unique identifier when combined with the team name.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>results <span class="ot">&lt;-</span> results <span class="sc">%&gt;%</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">seas_rnd =</span> <span class="fu">paste0</span>(Season, <span class="st">&quot;.&quot;</span>, Round.Number))</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>results <span class="ot">&lt;-</span> results <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">seas_rnd =</span> <span class="fu">paste0</span>(Season, <span class="st">&quot;.&quot;</span>, Round.Number))</span></code></pre></div>
 <p>Since our <code>fixture</code> data and <code>results</code> data are
 coming from different sources, we need to fix a few things up. This is a
 good time to point out that using similar sources is great when
 possible!</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> fixture <span class="sc">%&gt;%</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Date <span class="sc">&gt;</span> <span class="fu">max</span>(results<span class="sc">$</span>Date)) <span class="sc">%&gt;%</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Date =</span> <span class="fu">ymd</span>(<span class="fu">format</span>(Date, <span class="st">&quot;%Y-%m-%d&quot;</span>))) <span class="sc">%&gt;%</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Round.Number =</span> <span class="st">`</span><span class="at">Round</span><span class="st">`</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fixture)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> fixture <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">filter</span>(Date <span class="sc">&gt;</span> <span class="fu">max</span>(results<span class="sc">$</span>Date)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Date =</span> <span class="fu">ymd</span>(<span class="fu">format</span>(Date, <span class="st">&quot;%Y-%m-%d&quot;</span>))) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">Round.Number =</span> <span class="st">`</span><span class="at">Round</span><span class="st">`</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="fu">head</span>(fixture)</span></code></pre></div>
 </div>
 <div id="set-elo-parameters" class="section level2">
 <h2>Set ELO parameters</h2>
@@ -410,10 +410,10 @@ uses a similar method. For further reading, I strongly recommend
 checking out <a href="http://www.matterofstats.com/mafl-stats-journal/2013/10/13/building-your-own-team-rating-system.html">Matter
 of Stats</a> for a great explainer on the types of parameters that could
 be included.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set parameters</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>HGA <span class="ot">&lt;-</span> <span class="dv">30</span> <span class="co"># home ground advantage</span></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>carryOver <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="co"># season carry over</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>k_val <span class="ot">&lt;-</span> <span class="dv">20</span> <span class="co"># update weighting factor</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Set parameters</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>HGA <span class="ot">&lt;-</span> <span class="dv">30</span> <span class="co"># home ground advantage</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>carryOver <span class="ot">&lt;-</span> <span class="fl">0.5</span> <span class="co"># season carry over</span></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>k_val <span class="ot">&lt;-</span> <span class="dv">20</span> <span class="co"># update weighting factor</span></span></code></pre></div>
 </div>
 <div id="map-margin-function" class="section level2">
 <h2>Map margin function</h2>
@@ -426,10 +426,10 @@ of -80 to 80. Anything outside of this goes to the margins of 0 or
 1.</p>
 <p>We create that as a function and then use that function in our elo
 model.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>map_margin_to_outcome <span class="ot">&lt;-</span> <span class="cf">function</span>(margin, <span class="at">marg.max =</span> <span class="dv">80</span>, <span class="at">marg.min =</span> <span class="sc">-</span><span class="dv">80</span>){</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  norm <span class="ot">&lt;-</span> (margin <span class="sc">-</span> marg.min)<span class="sc">/</span>(marg.max <span class="sc">-</span> marg.min)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  norm <span class="sc">%&gt;%</span> <span class="fu">pmin</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="fu">pmax</span>(<span class="dv">0</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>map_margin_to_outcome <span class="ot">&lt;-</span> <span class="cf">function</span>(margin, <span class="at">marg.max =</span> <span class="dv">80</span>, <span class="at">marg.min =</span> <span class="sc">-</span><span class="dv">80</span>){</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  norm <span class="ot">&lt;-</span> (margin <span class="sc">-</span> marg.min)<span class="sc">/</span>(marg.max <span class="sc">-</span> marg.min)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  norm <span class="sc">%&gt;%</span> <span class="fu">pmin</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="fu">pmax</span>(<span class="dv">0</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="calculate-elo-results" class="section level2">
 <h2>Calculate ELO results</h2>
@@ -439,31 +439,31 @@ this. I won’t explain everything about what is going on here - you can
 read all about it at the package <a href="https://CRAN.R-project.org/package=elo">vignette</a> - but in
 general, we provide a function that indicates what is included in our
 model, as well as some model parameters.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run ELO</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>elo.data <span class="ot">&lt;-</span> <span class="fu">elo.run</span>(</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_margin_to_outcome</span>(Home.Points <span class="sc">-</span> Away.Points) <span class="sc">~</span></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">adjust</span>(Home.Team, HGA) <span class="sc">+</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    Away.Team <span class="sc">+</span></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">regress</span>(Season, <span class="dv">1500</span>, carryOver) <span class="sc">+</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group</span>(seas_rnd),</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">k =</span> k_val,</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> results</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Run ELO</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>elo.data <span class="ot">&lt;-</span> <span class="fu">elo.run</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="fu">map_margin_to_outcome</span>(Home.Points <span class="sc">-</span> Away.Points) <span class="sc">~</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="fu">adjust</span>(Home.Team, HGA) <span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    Away.Team <span class="sc">+</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>    <span class="fu">regress</span>(Season, <span class="dv">1500</span>, carryOver) <span class="sc">+</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>    <span class="fu">group</span>(seas_rnd),</span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>  <span class="at">k =</span> k_val,</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a>  <span class="at">data =</span> results</span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>)</span></code></pre></div>
 <p>Now that is run, we can view our results. The <code>elo</code>
 package provides various ways to do this.</p>
 <p>Firstly, using <code>as.data.frame</code> we can view the predicted
 and actual result of each game. Also in this table is the change in ELO
 rating for the home and away side. See below for the last few games of
 2018.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.data.frame</span>(elo.data) <span class="sc">%&gt;%</span> <span class="fu">tail</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">as.data.frame</span>(elo.data) <span class="sc">%&gt;%</span> <span class="fu">tail</span>()</span></code></pre></div>
 <p>We can specifically focus on how each team’s rating changes over time
 using <code>as.matrix</code>. Again - viewing the end of 2018 also shows
 teams that didn’t make the finals have the same ELO as the rounds go on
 since they aren’t playing finals.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">as.matrix</span>(elo.data) <span class="sc">%&gt;%</span> <span class="fu">tail</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">as.matrix</span>(elo.data) <span class="sc">%&gt;%</span> <span class="fu">tail</span>()</span></code></pre></div>
 <p>Lastly, we can check the final ELO ratings of each team at the end of
 our data using <code>final.elos</code> (here - up to end of 2018).</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">final.elos</span>(elo.data)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">final.elos</span>(elo.data)</span></code></pre></div>
 <p>We could keep tweaking our parameters until we are happy. Ideally
 we’d have a training and test set and be using some kind of cost
 function to optimise these values on like a log likelihood, mean
@@ -477,10 +477,10 @@ parameters.</p>
 do some predictions! For this, we just need to use our fixture and the
 <code>prediction</code> function with our ELO model as an input. The
 <code>elo</code> package takes care of the result.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> fixture <span class="sc">%&gt;%</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Prob =</span> <span class="fu">predict</span>(elo.data, <span class="at">newdata =</span> fixture))</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(fixture)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> fixture <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Prob =</span> <span class="fu">predict</span>(elo.data, <span class="at">newdata =</span> fixture))</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="fu">head</span>(fixture)</span></code></pre></div>
 <p>From here - you could turn these probabilities back into a margin
 through another mapping function. Again - I’ll leave that for the reader
 to decide.</p>

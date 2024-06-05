@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 not_cran = identical(Sys.getenv("NOT_CRAN"), "true")
 online <- !is.null(curl::nslookup("r-project.org", error = FALSE))
 eval_param <- not_cran & online

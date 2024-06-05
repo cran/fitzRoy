@@ -58,7 +58,7 @@ library(dplyr)
 #  fetch_fixture(2021, round_number = 5, source = "squiggle")
 #  fetch_fixture_squiggle(2021, round_number = 5)
 
-## ---- eval = FALSE------------------------------------------------------------
+## ----eval = FALSE-------------------------------------------------------------
 #  fetch_fixture(2022, source = "AFL", comp = "VFL")
 #  fetch_player_stats(2022, round = 1, source = "AFL", comp = "VFLW")
 #  fetch_fixture(2022, source = "AFL", comp = "WAFL")

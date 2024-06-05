@@ -340,8 +340,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(fitzRoy)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(fitzRoy)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
 <div id="squiggle-data" class="section level1">
 <h1>Squiggle Data</h1>
 <p>You can access data from the <a href="https://api.squiggle.com.au">Squiggle API</a> directly with the
@@ -381,7 +381,7 @@ arguments. * <code>year</code> - Year * <code>round</code> - Round *
 complete</p>
 <p>These can be supplied as named arguments after the query. For
 example, to return games from just 2020, we would use the following.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="at">query =</span> <span class="st">&quot;games&quot;</span>, <span class="at">year =</span> <span class="dv">2020</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="at">query =</span> <span class="st">&quot;games&quot;</span>, <span class="at">year =</span> <span class="dv">2020</span>)</span></code></pre></div>
 </div>
 </div>
 <div id="examples" class="section level1">
@@ -389,48 +389,48 @@ example, to return games from just 2020, we would use the following.</p>
 <div id="teams" class="section level2">
 <h2>Teams</h2>
 <p>Fetch info about one or more AFL teams.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;teams&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;teams&quot;</span>)</span></code></pre></div>
 </div>
 <div id="games" class="section level2">
 <h2>Games</h2>
 <p>Fetch info about one or more games.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="at">query =</span> <span class="st">&quot;games&quot;</span>, <span class="at">year =</span> <span class="dv">2020</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="at">query =</span> <span class="st">&quot;games&quot;</span>, <span class="at">year =</span> <span class="dv">2020</span>)</span></code></pre></div>
 </div>
 <div id="sources" class="section level2">
 <h2>Sources</h2>
 <p>Fetch info about one or more computer models.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># You can get the sources</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;sources&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># You can get the sources</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;sources&quot;</span>)</span></code></pre></div>
 </div>
 <div id="tips" class="section level2">
 <h2>Tips</h2>
 <p>Fetch info about one or more tips made by computer models.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get all tips</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;tips&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># Get all tips</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;tips&quot;</span>)</span></code></pre></div>
 <p>We can just look at one particular round.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get` just tips from round 1, 2018</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;tips&quot;</span>, <span class="at">round =</span> <span class="dv">1</span>, <span class="at">year =</span> <span class="dv">2018</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Get` just tips from round 1, 2018</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;tips&quot;</span>, <span class="at">round =</span> <span class="dv">1</span>, <span class="at">year =</span> <span class="dv">2018</span>)</span></code></pre></div>
 </div>
 <div id="standings" class="section level2">
 <h2>Standings</h2>
 <p>Fetch info about team standings at a point in time, i.e. the
 ladder.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;standings&quot;</span>, <span class="at">year =</span> <span class="dv">2020</span>, <span class="at">round =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;standings&quot;</span>, <span class="at">year =</span> <span class="dv">2020</span>, <span class="at">round =</span> <span class="dv">1</span>)</span></code></pre></div>
 </div>
 <div id="ladder" class="section level2">
 <h2>Ladder</h2>
 <p>Fetch info about one or more projected ladders generated by computer
 models. For the actual ladder, see standings instead.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;ladder&quot;</span>, <span class="at">year =</span> <span class="dv">2019</span>, <span class="at">round =</span> <span class="dv">15</span>, <span class="at">source =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;ladder&quot;</span>, <span class="at">year =</span> <span class="dv">2019</span>, <span class="at">round =</span> <span class="dv">15</span>, <span class="at">source =</span> <span class="dv">1</span>)</span></code></pre></div>
 </div>
 <div id="pav" class="section level2">
 <h2>PAV</h2>
 <p>Fetch info about players using HPN Footy’s Player Approximate
 Value.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;pav&quot;</span>, </span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>                    <span class="at">firstname =</span> <span class="st">&quot;Dustin&quot;</span>, </span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">surname =</span> <span class="st">&quot;Martin&quot;</span>, </span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">year =</span> <span class="dv">2017</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">fetch_squiggle_data</span>(<span class="st">&quot;pav&quot;</span>, </span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>                    <span class="at">firstname =</span> <span class="st">&quot;Dustin&quot;</span>, </span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>                    <span class="at">surname =</span> <span class="st">&quot;Martin&quot;</span>, </span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>                    <span class="at">year =</span> <span class="dv">2017</span>)</span></code></pre></div>
 </div>
 </div>
 

@@ -350,26 +350,26 @@ The player details functions accepts slightly different arguments.</p>
 player details for a given club and source. The source will determine
 exactly what details are returned. The default is the AFL.com.au
 website.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_player_details</span>(<span class="st">&quot;Hawthorn&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">fetch_player_details</span>(<span class="st">&quot;Hawthorn&quot;</span>)</span></code></pre></div>
 <p>The AFL website will return AFLW or AFLM data, while other sources
 only include AFLM data.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>details_aflw <span class="ot">&lt;-</span> <span class="fu">fetch_player_details</span>(<span class="at">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>, <span class="at">current =</span> <span class="cn">TRUE</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(details_aflw)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>details_aflw <span class="ot">&lt;-</span> <span class="fu">fetch_player_details</span>(<span class="at">team =</span> <span class="st">&quot;Western Bulldogs&quot;</span>, <span class="at">current =</span> <span class="cn">TRUE</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>, <span class="at">source =</span> <span class="st">&quot;AFL&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">head</span>(details_aflw)</span></code></pre></div>
 <p>The list of details returned for AFL.com.au website is below.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(details_aflw)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">glimpse</span>(details_aflw)</span></code></pre></div>
 <p>The AFLTables.com source will return all players who have played for
 the specified team over time.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_player_details</span>(<span class="st">&quot;Hawthorn&quot;</span>, <span class="at">source =</span> <span class="st">&quot;afltables&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">fetch_player_details</span>(<span class="st">&quot;Hawthorn&quot;</span>, <span class="at">source =</span> <span class="st">&quot;afltables&quot;</span>)</span></code></pre></div>
 <p>The Footywire.com source allows you to specify just the current list
 of players, which is fairly quick, or all players over time which can be
 a little slow.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_player_details</span>(<span class="st">&quot;Richmond&quot;</span>, <span class="at">source =</span> <span class="st">&quot;footywire&quot;</span>, <span class="at">current =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">fetch_player_details</span>(<span class="st">&quot;Richmond&quot;</span>, <span class="at">source =</span> <span class="st">&quot;footywire&quot;</span>, <span class="at">current =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p>One challenge is that each source accepts different values for the
 <code>team</code> argument. There is a helper function that will return
 an error if the wrong team is supplied and provide a list of acceptable
 values for that specific source.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">fetch_player_details</span>(<span class="st">&quot;Greater Western Sydney&quot;</span>, <span class="at">source =</span> <span class="st">&quot;afltables&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">fetch_player_details</span>(<span class="st">&quot;Greater Western Sydney&quot;</span>, <span class="at">source =</span> <span class="st">&quot;afltables&quot;</span>)</span></code></pre></div>
 </div>
 
 

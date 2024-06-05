@@ -30,7 +30,7 @@ library(dplyr)
 #  details_aflw <- fitzRoy:::details_aflw
 #  head(details_aflw)
 
-## ---- eval=eval_param---------------------------------------------------------
+## ----eval=eval_param----------------------------------------------------------
 #  glimpse(details_aflw)
 
 ## ----details_afltables, eval=FALSE, include=TRUE------------------------------
