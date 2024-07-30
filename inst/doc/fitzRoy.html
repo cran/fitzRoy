@@ -433,12 +433,16 @@ can specify either the Mens or Womens competitions using the
 <code>comp</code> argument.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>fixture <span class="ot">&lt;-</span> <span class="fu">fetch_fixture</span>(<span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>fixture <span class="sc">%&gt;%</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">select</span>(utcStartTime, round.name, </span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>         home.team.name, away.team.name, venue.name)</span></code></pre></div>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    utcStartTime, round.name,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    home.team.name, away.team.name, venue.name</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  )</span></code></pre></div>
 <p>If wanted, you could return just a single round.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">5</span>, <span class="at">comp =</span> <span class="st">&quot;AFLM&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">select</span>(utcStartTime, round.name, </span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>         home.team.name, away.team.name, venue.name)</span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    utcStartTime, round.name,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    home.team.name, away.team.name, venue.name</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  )</span></code></pre></div>
 <p>You can get results data from other sources including
 <code>Squiggle</code> and <code>Footywire</code>. The default source for
 <code>fetch_results()</code> is the AFL.com.au website.</p>
@@ -454,9 +458,11 @@ when running after the teams have been announced but before the match
 has been played.</p>
 <p>The only data source with lineup data is the AFL.com.au website.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">fetch_lineup</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">1</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">select</span>(round.name, status, teamName, </span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>         player.playerName.givenName,</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>         player.playerName.surname, teamStatus)</span></code></pre></div>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    round.name, status, teamName,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    player.playerName.givenName,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    player.playerName.surname, teamStatus</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
 <div id="results" class="section level3">
 <h3>Results</h3>
@@ -481,9 +487,11 @@ website.</p>
 <span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>results_footywire <span class="ot">&lt;-</span> <span class="fu">fetch_results_footywire</span>(<span class="dv">1990</span>)</span></code></pre></div>
 <p>You can get AFLW results by using the <code>comp</code> argument.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">fetch_results</span>(<span class="dv">2020</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="fu">select</span>(match.name, venue.name, round.name,</span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>         homeTeamScore.matchScore.totalScore,</span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>         awayTeamScore.matchScore.totalScore)</span></code></pre></div>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>    match.name, venue.name, round.name,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>    homeTeamScore.matchScore.totalScore,</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    awayTeamScore.matchScore.totalScore</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
 <div id="ladder" class="section level3">
 <h3>Ladder</h3>
@@ -492,9 +500,11 @@ website.</p>
 one round at a time, although it is possible to return multiple
 rounds.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>ladder <span class="ot">&lt;-</span> <span class="fu">fetch_ladder</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">7</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="fu">select</span>(season, round_name, position, </span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>         team.name, pointsFor, pointsAgainst, form)</span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>ladder</span></code></pre></div>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>    season, round_name, position,</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>    team.name, pointsFor, pointsAgainst, form</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>  )</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>ladder</span></code></pre></div>
 <p>There are many variables included in the AFL.com.au ladder.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>ladder <span class="ot">&lt;-</span> <span class="fu">fetch_ladder</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">7</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>)</span>
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">ncol</span>(ladder)</span></code></pre></div>

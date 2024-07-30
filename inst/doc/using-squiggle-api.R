@@ -1,16 +1,15 @@
 ## ----setup, include = FALSE---------------------------------------------------
-not_cran = identical(Sys.getenv("NOT_CRAN"), "true")
+not_cran <- identical(Sys.getenv("NOT_CRAN"), "true")
 online <- !is.null(curl::nslookup("r-project.org", error = FALSE))
 eval_param <- not_cran & online
 
 knitr::opts_chunk$set(
-	eval = eval_param,
-	message = FALSE,
-	warning = FALSE,
-	collapse = TRUE,
-	comment = "#>"
+  eval = eval_param,
+  message = FALSE,
+  warning = FALSE,
+  collapse = TRUE,
+  comment = "#>"
 )
-
 
 ## -----------------------------------------------------------------------------
 #  library(fitzRoy)
@@ -24,7 +23,6 @@ knitr::opts_chunk$set(
 
 ## ----squiggle_teams, include=TRUE, eval=FALSE---------------------------------
 #  fetch_squiggle_data("teams")
-#  
 
 ## ----squiggle_teams_included, echo=FALSE, eval=eval_param---------------------
 #  fitzRoy:::squiggle_teams
@@ -38,7 +36,6 @@ knitr::opts_chunk$set(
 ## ----squiggle_sources1, include=TRUE, eval=FALSE------------------------------
 #  # You can get the sources
 #  fetch_squiggle_data("sources")
-#  
 
 ## ----squiggle_sources1_included, echo=FALSE, eval=eval_param------------------
 #  fitzRoy:::squiggle_sources
@@ -71,9 +68,10 @@ knitr::opts_chunk$set(
 
 ## ----squiggle_pav,  include=TRUE, eval=FALSE----------------------------------
 #  fetch_squiggle_data("pav",
-#                      firstname = "Dustin",
-#                      surname = "Martin",
-#                      year = 2017)
+#    firstname = "Dustin",
+#    surname = "Martin",
+#    year = 2017
+#  )
 
 ## ----squiggle_pav_included, echo=FALSE, eval=eval_param-----------------------
 #  fitzRoy:::squiggle_pav

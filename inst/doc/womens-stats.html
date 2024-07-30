@@ -355,35 +355,43 @@ round.</p>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>online</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>eval_param</span></code></pre></div>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">fetch_fixture</span>(<span class="at">season =</span> <span class="dv">2021</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">select</span>(compSeason.name, round.name, </span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>         home.team.name, away.team.name, </span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>         venue.name)</span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    compSeason.name, round.name,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    home.team.name, away.team.name,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    venue.name</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
 <div id="lineup" class="section level2">
 <h2>Lineup</h2>
 <p>We can get the lineup for a given set of matches in a particular
 round.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">fetch_lineup</span>(<span class="dv">2021</span>, <span class="at">round_number =</span> <span class="dv">1</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">select</span>(round.name, status, teamName, </span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>         player.playerName.givenName,</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>         player.playerName.surname, teamStatus)</span></code></pre></div>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    round.name, status, teamName,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    player.playerName.givenName,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    player.playerName.surname, teamStatus</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
 <div id="results" class="section level2">
 <h2>Results</h2>
 <p>The match results, including the teams playing, venue information and
 final scores are returned via <code>fetch_results</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">fetch_results</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">1</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">select</span>( match.date, match.name,</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>         homeTeamScore.matchScore.totalScore, awayTeamScore.matchScore.totalScore)</span></code></pre></div>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>    match.date, match.name,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    homeTeamScore.matchScore.totalScore, awayTeamScore.matchScore.totalScore</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
 <div id="ladder" class="section level2">
 <h2>Ladder</h2>
 <p>We can also get the ladder at any point with
 <code>fetch_ladder</code>.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">fetch_ladder</span>(<span class="dv">2020</span>, <span class="at">round_number =</span> <span class="dv">6</span>, <span class="at">comp =</span> <span class="st">&quot;AFLW&quot;</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">select</span>(season, round_name, </span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>         position, team.name, played, </span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>         pointsFor, pointsAgainst)</span></code></pre></div>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>    season, round_name,</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    position, team.name, played,</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    pointsFor, pointsAgainst</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  )</span></code></pre></div>
 </div>
 <div id="stats" class="section level2">
 <h2>Stats</h2>

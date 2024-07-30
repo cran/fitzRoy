@@ -1,4 +1,3 @@
-
 #' Check Season
 #'
 #' Checks the season for various things
@@ -13,7 +12,7 @@ check_season <- function(x) {
       format("%Y") %>%
       as.numeric()
   }
-  if (min(nchar(x)) < 4) rlang::abort(glue::glue("Season should be in YYYY format"))
+  if (min(nchar(x)) < 4) cli::cli_abort("Season should be in YYYY format")
   return(x)
 }
 
@@ -37,10 +36,10 @@ check_comp <- function(x) {
   )
 
   if (!x %in% valid) {
-    rlang::abort(glue::glue(
+    cli::cli_abort(
       "`Comp` must be one of {glue::glue_collapse(valid, sep = \", \", last = \" or \")}
     You provided the following: {x}"
-    ))
+    )
   } else {
     return(x)
   }
@@ -55,8 +54,6 @@ check_comp <- function(x) {
 #' @keywords internal
 #' @noRd
 check_source <- function(x) {
-  # if (!x %in% c("AFL", "footywire", "afltables", "squiggle", "fryzigg")) rlang::abort(glue::glue("Source should be either \"AFL\", \"footywire\" or \"afltables\". You supplied {x}"))
-
   valid <- c(
     "AFL",
     "footywire",
@@ -66,10 +63,10 @@ check_source <- function(x) {
   )
 
   if (!x %in% valid) {
-    rlang::abort(glue::glue(
+    cli::cli_abort(
       "`Source` must be one of {glue::glue_collapse(valid, sep = \", \", last = \" or \")}
     You provided the following: {x}"
-    ))
+    )
   } else {
     return(x)
   }
@@ -94,10 +91,10 @@ check_comp_source <- function(comp, source) {
   )
 
   if ((!source %in% valid) & comp == "AFLW") {
-    rlang::abort(glue::glue(
+    cli::cli_abort(
       "For AFLW, source must be one of {glue::glue_collapse(valid, sep = \", \", last = \" or \")}
     You provided the following: {source}"
-    ))
+    )
   }
 }
 
@@ -113,11 +110,9 @@ verify_year <- function(year) {
   year <- suppressWarnings(as.numeric(year))
   if (is.na(year)) {
     stop(paste("Not a year."))
-  }
-  else if (year >= 1897 & year <= as.numeric(format(Sys.Date(), "%Y"))) {
+  } else if (year >= 1897 & year <= as.numeric(format(Sys.Date(), "%Y"))) {
     return(year)
-  }
-  else {
+  } else {
     stop(paste("Not a valid year within available range."))
   }
 }

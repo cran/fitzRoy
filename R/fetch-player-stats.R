@@ -44,7 +44,6 @@ fetch_player_stats <- function(season = NULL,
                                comp = "AFLM",
                                source = "AFL",
                                ...) {
-
   # Do some data checks
   # season <- check_season(season)
   check_comp_source(comp, source)
@@ -58,8 +57,8 @@ fetch_player_stats <- function(season = NULL,
   )
 
   if (is.null(dat)) {
-    rlang::warn(glue::glue("The source \"{source}\" does not have Player Stats.
-                           Please use one of \"AFL\" \"footywire\", \"afltables\" or \"fryzigg\""))
+    cli::cli_warn("The source \"{source}\" does not have Player Stats.
+                           Please use one of \"AFL\" \"footywire\", \"afltables\" or \"fryzigg\"")
   }
   return(dat)
 }
@@ -67,53 +66,50 @@ fetch_player_stats <- function(season = NULL,
 #' @rdname fetch_player_stats
 #' @export
 fetch_player_stats_afl <- function(season = NULL, round_number = NULL, comp = "AFLM") {
-
-
   # some data checks
   season <- check_season(season)
   if (is.null(round_number)) round_number <- ""
 
   # Get match ids
-  cli_id1 <- cli::cli_process_start("Fetching match ids")
+  cli::cli_progress_step("Fetching match ids")
   matches <- suppressMessages(fetch_fixture_afl(season, round_number, comp))
-  
+
   if (is.null(matches)) {
-    rlang::warn(glue::glue("No player stats data found for season {season} on AFL.com.au for {comp}"))
+    cli::cli_warn("No player stats data found for season {season} on AFL.com.au for {comp}")
     return(NULL)
   }
-  
-  
+
+
   ids <- matches$providerId
   if (length(ids) == 0) {
-    rlang::warn(glue::glue("No player stats data found for season {season} on AFL.com.au for {comp}"))
+    cli::cli_warn("No player stats data found for season {season} on AFL.com.au for {comp}")
     return(NULL)
   }
-  cli::cli_process_done(cli_id1)
 
   # get cookie
   cookie <- get_afl_cookie()
 
   # Loop through each match
-  cli_id2 <- cli::cli_process_start("Finding player stats for {.val {length(ids)}} match{?es}.")
+  cli::cli_progress_step("Finding player stats for {.val {length(ids)}} match{?es}.")
   match_stats <- ids %>%
     purrr::map_dfr(purrr::possibly(~ fetch_match_stats_afl(.x, cookie),
       otherwise = data.frame()
     ))
-  cli::cli_process_done(cli_id2)
 
-  if(nrow(match_stats) == 0) {
-    cli::cli_alert_info("No completed matches found")
+  if (nrow(match_stats) == 0) {
+    cli::cli_inform("No completed matches found")
     return(NULL)
-    
   }
-  
+
   # add match details
-  vars <- c("providerId", "utcStartTime", "status", 
-            "compSeason.shortName", "round.name", "round.roundNumber", 
-            "venue.name", 
-            "home.team.name", "home.team.club.name", 
-            "away.team.name", "away.team.club.name")
-  
+  vars <- c(
+    "providerId", "utcStartTime", "status",
+    "compSeason.shortName", "round.name", "round.roundNumber",
+    "venue.name",
+    "home.team.name", "home.team.club.name",
+    "away.team.name", "away.team.club.name"
+  )
+
   match_details <- matches %>%
     dplyr::select(dplyr::any_of(vars))
 
@@ -137,21 +133,30 @@ fetch_player_stats_afl <- function(season = NULL, round_number = NULL, comp = "A
 }
 
 
-#' @param rescrape Logical, defaults to FALSE. Determines if we should re-scrape data for a given season. By default, we return cached data which is much faster. Re-scraping is slow but sometimes needed if historical data has changed. 
+#' @param rescrape Logical, defaults to FALSE. Determines if we should re-scrape data for a given season. By default, we return cached data which is much faster. Re-scraping is slow but sometimes needed if historical data has changed.
 #' @param rescrape_start_season Numeric, if `rescrape = TRUE`, which season should we start scraping from. Defaults to minimum value of season
 #'
 #' @rdname fetch_player_stats
 #' @export
-fetch_player_stats_afltables <- function(season = NULL, round_number = NULL, rescrape = FALSE, rescrape_start_season = NULL) {
+fetch_player_stats_afltables <- function(season = NULL,
+                                         round_number = NULL,
+                                         rescrape = FALSE,
+                                         rescrape_start_season = NULL) {
   if (!is.null(round_number)) {
-    cli::cli_alert_info("{.field round_number} is not currently used for {.code fetch_player_stats_afltables}.Returning data for all rounds in specified seasons")
+    cli::cli_inform("{.field round_number} is not currently used for {.code fetch_player_stats_afltables}.Returning data for all rounds in specified seasons")
   }
 
   dates <- return_start_end_dates(season)
   start_date <- dates$start_date
   end_date <- dates$end_date
 
-  cli::cli_alert_info("Looking for data from {.val {start_date}} to {.val {end_date}}")
+  if (start_date > end_date) {
+    stop(cli::format_error(c(
+      "Cannot fetch player stats for {season} season"
+    )))
+  }
+
+  cli::cli_progress_step("Looking for data from {.val {start_date}} to {.val {end_date}}")
 
 
   # nolint start
@@ -163,45 +168,59 @@ fetch_player_stats_afltables <- function(season = NULL, round_number = NULL, res
     get(ls()[ls() != "fname"])
   }
 
-  cli_id1 <- cli::cli_process_start("fetching cached data from {.url github.com}")
+  cli::cli_progress_step("Fetching cached data from {.url github.com/jimmyday12/fitzRoy_data}")
   dat <- load_r_data(dat_url)
-  cli::cli_process_done(cli_id1)
 
-  
-  
-  if( rescrape ) {
+  if (rescrape) {
     if (is.null(rescrape_start_season)) rescrape_start_season <- format(start_date, "%Y")
     max_date <- lubridate::ymd(paste0(rescrape_start_season, "01-01"))
   } else {
     max_date <- max(dat$Date)
   }
-  
-  dat <- dat %>%
-    dplyr::filter(.data$Date <= max_date)
 
+  dat <- dat %>%
+    dplyr::filter(.data$Date > start_date & .data$Date < max_date) %>%
+    dplyr::mutate(
+      Jumper.No. = as.character(.data$Jumper.No.),
+      Substitute = as.character(.data$Substitute)
+    )
+
+  # Check for new data
   if (end_date > max_date) {
     urls <- get_afltables_urls(max_date, end_date)
     if (length(urls) != 0) {
-      cli::cli_alert_info("New data found for {.val {length(urls)}} matches")
-      dat_new <- scrape_afltables_match(urls)
-
-      dat <- list(dat, dat_new) %>%
-        # Some DFs have numeric columns as 'chr' and some have them as 'dbl',
-        # so we need to make them consistent before joining to avoid type errors
-        purrr::map(~ dplyr::mutate_at(., c("Jumper.No."), as.character)) %>%
-        dplyr::bind_rows(.)
+      new_data <- TRUE
+    } else {
+      new_data <- FALSE
     }
   } else {
-    cli::cli_alert_info("No new data found - returning cached data")
+    new_data <- FALSE
   }
-  message("Finished getting afltables data")
-  # Fix for players who's spelling changes on afltables.com
+
   dat <- dat %>%
-    dplyr::group_by(.data$ID) %>%
-    dplyr::mutate(
-      First.name = dplyr::first(.data$First.name),
-      Surname = dplyr::first(.data$Surname)
-    )
+    check_and_convert(dictionary_afltables) %>%
+    dplyr::rename(dplyr::any_of(mapping_afltables))
+
+  if (new_data) {
+    cli::cli_progress_step("New data found! Fetching new data from {.val {length(urls)}} matches")
+    dat_new <- scrape_afltables_match(urls)
+
+    dat_new <- dat_new %>%
+      check_and_convert(dictionary_afltables) %>%
+      dplyr::rename(dplyr::any_of(mapping_afltables))
+
+    dat <- list(dat, dat_new) %>%
+      # Some DFs have numeric columns as 'chr' and some have them as 'dbl',
+      # so we need to make them consistent before joining to avoid type errors
+      purrr::map(~ dplyr::mutate_at(., c("Jumper.No."), as.character)) %>%
+      purrr::map(~ dplyr::mutate_at(., c("Substitute"), as.character)) %>%
+      dplyr::bind_rows(.)
+  } else {
+    cli::cli_progress_step("No new data found! Returning cached data")
+  }
+
+
+  cli::cli_progress_step("Tidying data")
 
   # fix for finals names being incorrect
   dat$Round[dat$Round == "Grand Final"] <- "GF"
@@ -214,9 +233,12 @@ fetch_player_stats_afltables <- function(season = NULL, round_number = NULL, res
   dat <- dat %>%
     dplyr::mutate(Venue = stringr::str_squish(.data$Venue))
 
-  # return data
-  dat <- dplyr::filter(dat, .data$Date > start_date & .data$Date < end_date) %>%
-    dplyr::ungroup()
+  dat <- dplyr::filter(dat, .data$Date > start_date & .data$Date < end_date)
+
+  dat <- dat %>%
+    dplyr::select(dplyr::any_of(dictionary_afltables$field))
+
+  return(dat)
 }
 
 
@@ -224,7 +246,7 @@ fetch_player_stats_afltables <- function(season = NULL, round_number = NULL, res
 #' @export
 fetch_player_stats_fryzigg <- function(season = NULL, round_number = NULL, comp = "AFLM") {
   if (!is.null(round_number)) {
-    cli::cli_alert_info("{.field round_number} is not currently used for {.code fetch_player_stats_fryzigg}.Returning data for all rounds in specified seasons")
+    cli::cli_inform("{.field round_number} is not currently used for {.code fetch_player_stats_fryzigg}.Returning data for all rounds in specified seasons")
   }
 
   if (is.null(season)) {
@@ -236,7 +258,7 @@ fetch_player_stats_fryzigg <- function(season = NULL, round_number = NULL, comp 
   start <- min(season)
   end <- max(season)
 
-  id <- cli::cli_process_start("Returning cached {.field {comp}} data from {.val {season}}")
+  cli::cli_progress_step("Returning cached {.field {comp}} data from {.val {season}}")
 
   rds_url <- switch(comp,
     "AFLM" = "http://www.fryziggafl.net/static/fryziggafl.rds",
@@ -260,7 +282,6 @@ fetch_player_stats_fryzigg <- function(season = NULL, round_number = NULL, comp 
       date <= date_filt$end_date
   )
 
-  cli::cli_process_done(id)
   return(tibble::as_tibble(stats_df))
 }
 
@@ -273,7 +294,7 @@ fetch_player_stats_footywire <- function(season = NULL, round_number = NULL, che
   }
 
   if (!is.null(round_number)) {
-    cli::cli_alert_info("{.field round_number} is not currently used for {.code fetch_player_stats_footywire}.Returning data for all rounds in specified seasons")
+    cli::cli_inform("{.field round_number} is not currently used for {.code fetch_player_stats_footywire}.Returning data for all rounds in specified seasons")
   }
 
   if (is.null(season)) season <- 2010:as.numeric(format(Sys.Date(), "%Y"))
@@ -281,7 +302,7 @@ fetch_player_stats_footywire <- function(season = NULL, round_number = NULL, che
   start_year <- max(min(season), 2010)
   end_year <- min(max(season), as.numeric(format(Sys.Date(), "%Y")))
 
-  id1 <- cli::cli_process_start("Getting match IDs")
+  cli::cli_progress_step("Getting match IDs")
 
   fw_ids <- start_year:end_year %>%
     purrr::map(~ paste0("https://www.footywire.com/afl/footy/ft_match_list?year=", .)) %>%
@@ -293,12 +314,11 @@ fetch_player_stats_footywire <- function(season = NULL, round_number = NULL, che
     purrr::map_if(is.character, as.numeric) %>%
     purrr::reduce(c)
 
-  cli::cli_process_done(id1)
 
   # First, load data from github
   if (check_existing) {
-    url <- "https://github.com/jimmyday12/fitzRoy"
-    id2 <- cli::cli_process_start("Checking data on {.url {url}}")
+    url <- "https://github.com/jimmyday12/fitzRoy_data"
+    cli::cli_progress_step("Checking data on {.url {url}}")
 
     dat_url2 <- "https://github.com/jimmyday12/fitzroy_data/raw/main/data-raw/player_stats/player_stats.rda" # nolint
 
@@ -319,20 +339,22 @@ fetch_player_stats_footywire <- function(season = NULL, round_number = NULL, che
     # Check what's still missing
     git_ids <- fw_ids[!fw_ids %in% dat_git$Match_id]
 
-    cli::cli_process_done(id2)
 
     if (length(git_ids) == 0) {
-      cli::cli_alert_info("No new matches found - returning data cached on github")
+      cli::cli_inform("No new matches found - returning data cached on github")
 
       return(tibble::as_tibble(dat_git))
     } else {
       n <- length(git_ids)
       url <- "www.footywire.com"
-      id3 <- cli::cli_process_start("New data found for {.val {n}} matches - downloading from {.url {url}}")
+      cli::cli_progress_step("New data found for {.val {n}} matches - downloading from {.url {url}}")
+
 
       new_data <- fetch_footywire_stats(git_ids)
+
+      cli::cli_progress_step("Binding new data to old data")
+
       dat <- dat_git %>% dplyr::bind_rows(new_data)
-      cli::cli_process_done(id3)
 
       dat <- dat %>%
         dplyr::filter(.data$Season >= min(season) & .data$Season <= max(season))
@@ -340,10 +362,10 @@ fetch_player_stats_footywire <- function(season = NULL, round_number = NULL, che
       return(tibble::as_tibble(dat))
     }
   } else {
-    message("Downloading all data. Warning - this takes a long time")
+    cli::cli_progress_step("Downloading all data. Warning - this takes a long time")
     all_data_ids <- fw_ids
 
-    dat <- get_footywire_stats(all_data_ids)
+    dat <- fetch_footywire_stats(all_data_ids)
 
     dat <- dat %>%
       dplyr::filter(.data$Season >= min(season) & .data$Season <= max(season))
@@ -351,3 +373,5 @@ fetch_player_stats_footywire <- function(season = NULL, round_number = NULL, che
   }
 }
 
+# silence global variable NOTES
+utils::globalVariables(names = c("dictionary_afltables", "mapping_afltables", "player_mapping_afltables"))

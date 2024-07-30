@@ -39,21 +39,20 @@ fetch_player_details <- function(team = NULL,
                                  comp = "AFLM",
                                  source = "AFL",
                                  ...) {
-
   # Do some data checks
   check_comp_source(comp, source)
 
   # Ignore certain parameters based on source
   if (source == "afltables") {
-    cli::cli_alert("For the afltables source, details are returned for all seasons. Ignoring `current` argument")
+    cli::cli_inform("For the afltables source, details are returned for all seasons. Ignoring `current` argument")
   } else if (current) {
     season <- as.numeric(format(Sys.Date(), "%Y"))
-    cli::cli_alert("Returning player details for current season (`{season}`) from source `{source}`")
+    cli::cli_inform("Returning player details for current season (`{season}`) from source `{source}`")
   } else if (!current & source == "AFL") {
     season <- 2012:as.numeric(format(Sys.Date(), "%Y"))
-    cli::cli_alert("Returning player details from AFL website for seasons {min(season)} to {max(season)}")
+    cli::cli_inform("Returning player details from AFL website for seasons {min(season)} to {max(season)}")
   } else if (!current) {
-    cli::cli_alert("Returning historical player details from source `{source}`")
+    cli::cli_inform("Returning historical player details from source `{source}`")
   }
 
   dat <- switch(source,
@@ -70,7 +69,7 @@ fetch_player_details <- function(team = NULL,
     NULL
   )
 
-  if (is.null(dat)) rlang::warn(glue::glue("The source \"{source}\" does not have Player Details data. Please use one of \"afltables\" and \"footywire\""))
+  if (is.null(dat)) cli::cli_warn("The source \"{source}\" does not have Player Details data. Please use one of \"afltables\" and \"footywire\"")
   return(dat)
 }
 
@@ -79,19 +78,18 @@ fetch_player_details <- function(team = NULL,
 #' @rdname fetch_player_details
 #' @export
 fetch_player_details_afl <- function(season, team = NULL, comp = "AFLM", official_teams = FALSE) {
-
   # perform some validation
   season <- check_season(season)
   check_comp(comp)
 
   # get season id
   comp_seas_id <- find_season_id(season, comp)
-  
+
   if (is.null(comp_seas_id)) {
-    rlang::warn(glue::glue("No player details data found for season {season} on AFL.com.au for {comp}"))
+    cli::cli_warn("No player details data found for season {season} on AFL.com.au for {comp}")
     return(NULL)
   }
-  
+
   if (!comp %in% c("AFLM", "AFLW")) official_teams <- TRUE
 
   # return team abbreviation
@@ -100,26 +98,27 @@ fetch_player_details_afl <- function(season, team = NULL, comp = "AFLM", officia
       team_check_afl2(team, comp)
       team_abr <- team_abr_afl2(team, comp)
       team_ids <- find_team_id(team_abr, comp)
-      team_names <- team  
+      team_names <- team
     } else {
       team_check_afl(team)
       team_abr <- team_abr_afl(team)
       team_ids <- find_team_id(team_abr, comp)
       team_names <- team
     }
-    
   } else {
     team_dat <- find_team_id(team, comp = comp)
     team_ids <- team_dat$id
     team_names <- team_dat$name
   }
 
-  args <- list(teamId = team_ids,
-               team = team_names,
-               compSeasonId = comp_seas_id)
-  
+  args <- list(
+    teamId = team_ids,
+    team = team_names,
+    compSeasonId = comp_seas_id
+  )
+
   df <- purrr::pmap_dfr(args, fetch_squad_afl, season = season)
-  
+
   df %>%
     dplyr::mutate(data_accessed = Sys.Date())
 }
@@ -128,7 +127,7 @@ fetch_player_details_afl <- function(season, team = NULL, comp = "AFLM", officia
 #' @export
 fetch_player_details_afltables <- function(team = NULL) {
   if (is.null(team)) {
-    cli_all <- cli::cli_process_start("Fetching player details for all teams")
+    cli::cli_progress_step("Fetching player details for all teams")
 
     teams <- c(
       "Adelaide", "Brisbane Lions", "Brisbane Bears",
@@ -142,8 +141,6 @@ fetch_player_details_afltables <- function(team = NULL) {
 
     details_data <- teams %>%
       purrr::map_dfr(get_player_details_afltables)
-
-    cli::cli_process_done(cli_all)
 
     return(details_data)
   } else {

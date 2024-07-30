@@ -1,6 +1,6 @@
 Package: fitzRoy
 Title: Easily Scrape and Process AFL Data
-Version: 1.4.0
+Version: 1.5.0
 Authors@R: 
     c(person(given = "James",
              family = "Day",
@@ -33,24 +33,27 @@ Description: An easy package for scraping and processing Australia Rules Footbal
     cleaning and transformation of this data into formats that can be used for analysis. 
 License: MIT + file LICENSE
 URL: https://jimmyday12.github.io/fitzRoy/,
-        https://github.com/jimmyday12/fitzRoy
-BugReports: https://github.com/jimmyday12/fitzRoy/issues
-Depends: R (>= 3.5)
+        https://github.com/jimmyday12/fitzRoy,
+        https://github.com/jimmyday12/fitzroy
+BugReports: https://github.com/jimmyday12/fitzroy/issues
+Depends: R (>= 4.1)
 Imports: dplyr, httr, jsonlite, lubridate, magrittr, purrr, readr,
         rlang (>= 0.1.2), rvest, stringr (>= 1.3.0), tidyr (>= 1.0.0),
-        tidyselect, xml2, tibble, glue, cli, lifecycle, httr2
+        tidyselect, xml2, tibble, glue, cli, lifecycle, httr2, janitor
 Suggests: covr, elo, ggplot2, knitr, rmarkdown, testthat (>= 3.0.0),
         roxygen2, spelling, curl
 VignetteBuilder: knitr
 ByteCompile: true
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Language: en-US
 Config/testthat/edition: 3
 Config/testthat/parallel: true
-Config/testthat/start-first: fetch-player-stats, fetch*
+Config/testthat/start-first: fetch-player-stats, fetch-results,
+        fetch-lineup, fetch-fixture, fetch*, helpers-footywire
+LazyData: true
 NeedsCompilation: no
-Packaged: 2024-06-05 05:15:24 UTC; jamesday
+Packaged: 2024-07-30 06:16:32 UTC; jamesday
 Author: James Day [cre, aut],
   Robert Nguyen [aut],
   Matthew Erbs [ctb],
@@ -59,4 +62,4 @@ Author: James Day [cre, aut],
   Jacob Holden [ctb]
 Maintainer: James Day <jamesthomasday@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-06-05 05:30:03 UTC
+Date/Publication: 2024-07-30 06:30:02 UTC

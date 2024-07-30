@@ -1,14 +1,14 @@
 ## ----setup, include = FALSE---------------------------------------------------
-not_cran = identical(Sys.getenv("NOT_CRAN"), "true")
+not_cran <- identical(Sys.getenv("NOT_CRAN"), "true")
 online <- !is.null(curl::nslookup("r-project.org", error = FALSE))
 eval_param <- not_cran & online
 
 knitr::opts_chunk$set(
-	eval = eval_param,
-	message = FALSE,
-	warning = FALSE,
-	collapse = TRUE,
-	comment = "#>"
+  eval = eval_param,
+  message = FALSE,
+  warning = FALSE,
+  collapse = TRUE,
+  comment = "#>"
 )
 
 
@@ -37,7 +37,6 @@ fixture <- fitzRoy:::fixture_footywire_2019
 ## ----clean_results, eval=eval_param-------------------------------------------
 #  results <- results %>%
 #    mutate(seas_rnd = paste0(Season, ".", Round.Number))
-#  
 
 ## ----clean_fixture, eval=eval_param-------------------------------------------
 #  fixture <- fixture %>%
@@ -54,23 +53,24 @@ fixture <- fitzRoy:::fixture_footywire_2019
 #  k_val <- 20 # update weighting factor
 
 ## ----margin_outcome, eval=eval_param------------------------------------------
-#  map_margin_to_outcome <- function(margin, marg.max = 80, marg.min = -80){
-#    norm <- (margin - marg.min)/(marg.max - marg.min)
-#    norm %>% pmin(1) %>% pmax(0)
+#  map_margin_to_outcome <- function(margin, marg.max = 80, marg.min = -80) {
+#    norm <- (margin - marg.min) / (marg.max - marg.min)
+#    norm %>%
+#      pmin(1) %>%
+#      pmax(0)
 #  }
 
 ## ----run_elo, eval=eval_param-------------------------------------------------
 #  # Run ELO
 #  elo.data <- elo.run(
 #    map_margin_to_outcome(Home.Points - Away.Points) ~
-#    adjust(Home.Team, HGA) +
+#      adjust(Home.Team, HGA) +
 #      Away.Team +
 #      regress(Season, 1500, carryOver) +
 #      group(seas_rnd),
 #    k = k_val,
 #    data = results
 #  )
-#  
 
 ## ----print_results1, eval=eval_param------------------------------------------
 #  as.data.frame(elo.data) %>% tail()

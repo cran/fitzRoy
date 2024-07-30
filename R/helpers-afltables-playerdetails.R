@@ -63,18 +63,18 @@ get_player_debut_afltables <- function(team = NULL) {
 
   df %>%
     dplyr::select(
-      "Player", 
-      "DOB", 
-      "debut_date", 
+      "Player",
+      "DOB",
+      "debut_date",
       "debut_season",
-      "debut_round", 
-      "debut_team", 
+      "debut_round",
+      "debut_team",
       "debut_opposition"
     )
 }
 
 get_player_details_afltables <- function(team) {
-  cli_team <- cli::cli_process_start("Fetching player details for {team}")
+  cli::cli_progress_step("Fetching player details for {team}")
   valid_team <- team_check_afltables(team)
 
   team_abr <- dplyr::case_when(
@@ -117,7 +117,7 @@ get_player_details_afltables <- function(team) {
       into = c("Games", "Wins", "Draws", "Losses", "x"),
       fill = "right"
     ) %>%
-    dplyr::select(-'x') %>%
+    dplyr::select(-"x") %>%
     dplyr::mutate(date_accessed = Sys.Date()) %>%
     tidyr::separate("Player",
       into = c("surname", "firstname"),
@@ -136,15 +136,14 @@ get_player_details_afltables <- function(team) {
       as.numeric
     )) %>%
     dplyr::select(
-      "Player", 
+      "Player",
       "Team",
       dplyr::everything(),
-      -"surname", 
-      -"firstname", 
+      -"surname",
+      -"firstname",
       -"DOB"
     ) %>%
     dplyr::arrange(.data$Cap)
 
-  cli::cli_process_done(cli_team)
   return(df)
 }

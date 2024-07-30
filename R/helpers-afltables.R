@@ -18,8 +18,8 @@ team_check_afltables <- function(team) {
   valid <- team %in% valid_teams
 
   if (!valid) {
-    rlang::abort(glue::glue("{team} is not a valid input for afltables teams.
-                            Should be one of {glue::glue_collapse(valid_teams, sep = \", \")} "))
+    cli::cli_abort("{team} is not a valid input for afltables teams.
+                            Should be one of {glue::glue_collapse(valid_teams, sep = \", \")} ")
   }
 
   valid
@@ -38,8 +38,8 @@ replace_teams <- function(team) {
     team == "WB" ~ "Footscray",
     team == "PA" ~ "Port Adelaide",
     # keeping this one so that it's the same behaviour for University Blues:
-    team == "Blues" ~ "Carlton", 
-    
+    team == "Blues" ~ "Carlton",
+
     # simplifying the coercing of team names
     stringr::str_detect(tolower(team), "crows") ~ "Adelaide",
     stringr::str_detect(tolower(team), "brisbane|lions|bears") ~ "Brisbane Lions",
@@ -59,11 +59,11 @@ replace_teams <- function(team) {
     stringr::str_detect(tolower(team), "stk|saints") ~ "St Kilda",
     stringr::str_detect(tolower(team), "swans|south melbourne") ~ "Sydney",
     stringr::str_detect(tolower(team), "wce|eagles") ~ "West Coast",
-    
+
     # AFL have also introduced capitalised team names for GC and GWS
     stringr::str_detect(team, "SUNS") ~ "Gold Coast",
     stringr::str_detect(team, "GIANTS") ~ "GWS",
-    
+
     # handle for indigenous round team names
     team == "Narrm" ~ "Melbourne",
     team == "Walyalup" ~ "Fremantle",
@@ -83,30 +83,43 @@ replace_teams <- function(team) {
 replace_venues <- function(venue) {
   # Internal function
   dplyr::case_when(
-    venue == "AAMI Stadium" ~ "Football Park",
-    venue == "ANZ Stadium" ~ "Stadium Australia",
-    venue == "UTAS Stadium" ~ "York Park",
     venue == "Blacktown International" ~ "Blacktown",
     venue == "Blundstone Arena" ~ "Bellerive Oval",
-    venue == "Domain Stadium" ~ "Subiaco",
+    venue == "People First Stadium" ~ "Carrara",
+    venue == "Carrara Stadium" ~ "Carrara",
+    venue == "Metricon Stadium" ~ "Carrara",
     venue == "Etihad Stadium" ~ "Docklands",
     venue == "Marvel Stadium" ~ "Docklands",
-    venue == "GMHBA Stadium" ~ "Kardinia Park",
-    venue == "MCG" ~ "M.C.G.",
+    venue == "Docklands Stadium" ~ "Docklands",
     venue == "Mars Stadium" ~ "Eureka Stadium",
-    venue == "Metricon Stadium" ~ "Carrara",
+    venue == "The Gabba" ~ "Gabba",
+    venue == "AAMI Stadium" ~ "Football Park",
+    venue == "GMHBA Stadium" ~ "Kardinia Park",
+    venue == "Melbourne Cricket Ground" ~ "M.C.G.",
+    venue == "MCG" ~ "M.C.G.",
+    venue == "UNSW Canberra Oval" ~ "Manuka Oval",
+    venue == "Canberra Oval" ~ "Manuka Oval",
+    venue == "TIO Stadium" ~ "Marrara Oval",
     venue == "Optus Stadium" ~ "Perth Stadium",
+    venue == "Sydney Cricket Ground" ~ "S.C.G.",
     venue == "SCG" ~ "S.C.G.",
+    venue == "Accor Stadium" ~ "Stadium Australia",
+    venue == "ANZ Stadium" ~ "Stadium Australia",
+    venue == "Domain Stadium" ~ "Subiaco",
+    venue == "Adelaide Hills" ~ "Summit Sports Park",
+    venue == "Summit Sport and Recreation Park" ~ "Summit Sports Park",
+    venue == "Sydney Showground Stadium" ~ "Sydney Showground",
     venue == "Spotless Stadium" ~ "Sydney Showground",
     venue == "Showground Stadium" ~ "Sydney Showground",
     venue == "GIANTS Stadium" ~ "Sydney Showground",
-    venue == "TIO Stadium" ~ "Marrara Oval",
-    venue == "Westpac Stadium" ~ "Wellington",
-    venue == "Canberra Oval" ~ "Manuka Oval",
-    venue == "TIO Traeger Park" ~ "Traeger Park",
+    venue == "ENGIE Stadium" ~ "Sydney Showground",
     # Correct spelling is 'Traeger', but footywire.com is spelling it 'Traegar'
     # in its fixtures, so including both in case they eventually fix the misspelling
+    venue == "TIO Traeger Park" ~ "Traeger Park",
     venue == "TIO Traegar Park" ~ "Traeger Park",
+    venue == "Westpac Stadium" ~ "Wellington",
+    venue == "University of Tasmania Stadium" ~ "York Park",
+    venue == "UTAS Stadium" ~ "York Park",
     TRUE ~ venue
   )
 }
@@ -123,7 +136,6 @@ replace_venues <- function(venue) {
 #' @keywords internal
 #' @noRd
 convert_results <- function(results) {
-
   # Convert results to wide format
   results %>%
     tidyr::gather("variable", "value", "Home.Team":"Away.Points") %>%

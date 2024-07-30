@@ -63,8 +63,8 @@ fetch_betting_odds_footywire <- function(start_season = "2010",
     years <- page[[1]] %>%
       rvest::html_nodes("option") %>%
       rvest::html_text() %>%
-      stringr::str_extract("[0-9]*") 
-    
+      stringr::str_extract("[0-9]*")
+
     as.numeric(years[!years == ""])
   }
 
@@ -236,7 +236,7 @@ fetch_betting_odds_footywire <- function(start_season = "2010",
   season_range <- season_range[season_range %in% valid_seasons]
 
   if (length(season_range) < 1) {
-    rlang::warn("No valid seasons found")
+    cli::cli_warn("No valid seasons found")
     return(NA)
   }
 

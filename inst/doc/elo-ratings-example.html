@@ -12,7 +12,7 @@
 
 <meta name="author" content="James Day" />
 
-<meta name="date" content="2024-06-05" />
+<meta name="date" content="2024-07-30" />
 
 <title>ELO Ratings Example</title>
 
@@ -340,7 +340,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">ELO Ratings Example</h1>
 <h4 class="author">James Day</h4>
-<h4 class="date">2024-06-05</h4>
+<h4 class="date">2024-07-30</h4>
 
 
 
@@ -426,10 +426,12 @@ of -80 to 80. Anything outside of this goes to the margins of 0 or
 1.</p>
 <p>We create that as a function and then use that function in our elo
 model.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>map_margin_to_outcome <span class="ot">&lt;-</span> <span class="cf">function</span>(margin, <span class="at">marg.max =</span> <span class="dv">80</span>, <span class="at">marg.min =</span> <span class="sc">-</span><span class="dv">80</span>){</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  norm <span class="ot">&lt;-</span> (margin <span class="sc">-</span> marg.min)<span class="sc">/</span>(marg.max <span class="sc">-</span> marg.min)</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  norm <span class="sc">%&gt;%</span> <span class="fu">pmin</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="fu">pmax</span>(<span class="dv">0</span>)</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>map_margin_to_outcome <span class="ot">&lt;-</span> <span class="cf">function</span>(margin, <span class="at">marg.max =</span> <span class="dv">80</span>, <span class="at">marg.min =</span> <span class="sc">-</span><span class="dv">80</span>) {</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  norm <span class="ot">&lt;-</span> (margin <span class="sc">-</span> marg.min) <span class="sc">/</span> (marg.max <span class="sc">-</span> marg.min)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  norm <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>    <span class="fu">pmin</span>(<span class="dv">1</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>    <span class="fu">pmax</span>(<span class="dv">0</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="calculate-elo-results" class="section level2">
 <h2>Calculate ELO results</h2>
@@ -442,7 +444,7 @@ model, as well as some model parameters.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Run ELO</span></span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>elo.data <span class="ot">&lt;-</span> <span class="fu">elo.run</span>(</span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>  <span class="fu">map_margin_to_outcome</span>(Home.Points <span class="sc">-</span> Away.Points) <span class="sc">~</span></span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>  <span class="fu">adjust</span>(Home.Team, HGA) <span class="sc">+</span></span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>    <span class="fu">adjust</span>(Home.Team, HGA) <span class="sc">+</span></span>
 <span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>    Away.Team <span class="sc">+</span></span>
 <span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>    <span class="fu">regress</span>(Season, <span class="dv">1500</span>, carryOver) <span class="sc">+</span></span>
 <span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>    <span class="fu">group</span>(seas_rnd),</span>
