@@ -18,11 +18,11 @@ library(dplyr)
 dat <- fitzRoy:::stats_fryzigg_2019
 
 ## ----results, eval=FALSE, include=TRUE----------------------------------------
-#  dat <- fitzRoy::fetch_player_stats_fryzigg(2019)
+# dat <- fitzRoy::fetch_player_stats_fryzigg(2019)
 
 ## ----results2, eval=eval_param------------------------------------------------
-#  dplyr::glimpse(dat)
+# dplyr::glimpse(dat)
 
 ## ----results3, eval=eval_param------------------------------------------------
-#  head(dat)
+# head(dat)
 

@@ -16,32 +16,32 @@ library(fitzRoy)
 library(dplyr)
 
 ## ----details_aflm, eval=FALSE, include=TRUE-----------------------------------
-#  fetch_player_details("Hawthorn")
+# fetch_player_details("Hawthorn")
 
 ## ----details_aflm_included, echo=FALSE, eval=eval_param-----------------------
-#  fitzRoy:::details_aflm
+# fitzRoy:::details_aflm
 
 ## ----details_aflw, eval=FALSE, include=TRUE-----------------------------------
-#  details_aflw <- fetch_player_details(team = "Western Bulldogs", current = TRUE, comp = "AFLW", source = "AFL")
-#  
-#  head(details_aflw)
+# details_aflw <- fetch_player_details(team = "Western Bulldogs", current = TRUE, comp = "AFLW", source = "AFL")
+# 
+# head(details_aflw)
 
 ## ----details_aflw_included, echo=FALSE, eval=eval_param-----------------------
-#  details_aflw <- fitzRoy:::details_aflw
-#  head(details_aflw)
+# details_aflw <- fitzRoy:::details_aflw
+# head(details_aflw)
 
 ## ----eval=eval_param----------------------------------------------------------
-#  glimpse(details_aflw)
+# glimpse(details_aflw)
 
 ## ----details_afltables, eval=FALSE, include=TRUE------------------------------
-#  fetch_player_details("Hawthorn", source = "afltables")
+# fetch_player_details("Hawthorn", source = "afltables")
 
 ## ----details_afltables_included, echo=FALSE, eval=eval_param------------------
-#  fitzRoy:::details_afltables
+# fitzRoy:::details_afltables
 
 ## ----details_footywire, eval=FALSE, include=TRUE------------------------------
-#  fetch_player_details("Richmond", source = "footywire", current = TRUE)
+# fetch_player_details("Richmond", source = "footywire", current = TRUE)
 
 ## ----details_footywire_included, echo=FALSE, eval=eval_param------------------
-#  fitzRoy:::details_footywire
+# fitzRoy:::details_footywire
 
