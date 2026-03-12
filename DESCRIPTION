@@ -1,6 +1,6 @@
 Package: fitzRoy
 Title: Easily Scrape and Process AFL Data
-Version: 1.6.0
+Version: 1.7.0
 Authors@R: 
     c(person(given = "James",
              family = "Day",
@@ -53,7 +53,7 @@ Config/testthat/start-first: fetch-player-stats, fetch-results,
         fetch-lineup, fetch-fixture, fetch*, helpers-footywire
 LazyData: true
 NeedsCompilation: no
-Packaged: 2024-12-09 21:11:35 UTC; jamesday
+Packaged: 2026-03-12 10:56:30 UTC; jamesday
 Author: James Day [cre, aut],
   Robert Nguyen [aut],
   Matthew Erbs [ctb],
@@ -62,4 +62,4 @@ Author: James Day [cre, aut],
   Jacob Holden [ctb]
 Maintainer: James Day <jamesthomasday@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-12-10 08:40:15 UTC
+Date/Publication: 2026-03-12 12:40:02 UTC
